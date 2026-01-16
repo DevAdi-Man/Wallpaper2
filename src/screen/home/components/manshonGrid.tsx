@@ -5,6 +5,7 @@ import { useMemo } from "react";
 import { Pressable } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import { Image } from 'expo-image';
+import { FavoriteButton } from "./favoriteButton";
 
 export const ManshonGrid = () => {
     const route = useRouter()
@@ -35,6 +36,7 @@ export const ManshonGrid = () => {
                     }}
                     style={styles.card}>
                     <Image source={item.imgSource} style={[styles.image, { height: item.height }]} />
+                    <FavoriteButton wallpaper={{id:item.id,url:item.imgSource}}/>
                 </Pressable>
             )}
         />
@@ -43,15 +45,21 @@ export const ManshonGrid = () => {
 
 const styles = StyleSheet.create((theme) => ({
     container: {
-        paddingHorizontal: 12,
+        paddingHorizontal: 8,
     },
     card: {
-        margin: 6,
+        margin: 8,
         borderRadius: 16,
         overflow: 'hidden',
-        backgroundColor: theme.colors.card
+        backgroundColor: theme.colors.card,
+        position: 'relative'
     },
     image: {
         width: '100%',
+    },
+    heart: {
+        position: 'absolute',
+        top: 8,
+        right: 6
     }
 }))
