@@ -3,14 +3,16 @@ import { ThemeText } from "@/src/components/themeText"
 import { CategoryGroup } from "@/src/utils/categoriesList"
 import { AntDesign } from "@expo/vector-icons"
 import { FlashList } from "@shopify/flash-list"
-import {  Pressable, View } from "react-native"
+import { Pressable, View } from "react-native"
 import { StyleSheet } from "react-native-unistyles"
 import { Image } from 'expo-image';
+import { useRouter } from "expo-router"
 interface CategorySectionProps extends CategoryGroup {
     onPress?: () => void
 }
 
 export const CategorySection: React.FC<CategorySectionProps> = ({ groupName, onPress, items }) => {
+    const router = useRouter()
     return (
         <View>
             <View style={styles.headerContainer}>
@@ -24,10 +26,18 @@ export const CategorySection: React.FC<CategorySectionProps> = ({ groupName, onP
                 data={items}
                 numColumns={3}
                 renderItem={({ item }) => (
-                    <View style={styles.gridItem}>
+                    <Pressable onPress={() => {
+                        router.push({
+                            pathname: '/collection/[id]',
+                            params: {
+                                id: item.id,
+                                name: item.name
+                            }
+                        })
+                    }} style={styles.gridItem}>
                         <View style={styles.imageContainer}>
                             <Image
-                                source={{uri:item.thumbnail}}
+                                source={{ uri: item.thumbnail }}
                                 style={styles.image}
                                 contentFit="cover"
                             />
@@ -35,7 +45,7 @@ export const CategorySection: React.FC<CategorySectionProps> = ({ groupName, onP
                         <ThemeText style={styles.captionName} variant="caption" >
                             {item.name}
                         </ThemeText>
-                    </View>
+                    </Pressable>
                 )}
             />
         </View>
@@ -46,8 +56,8 @@ const styles = StyleSheet.create((theme, rt) => ({
     headerContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        paddingHorizontal:16,
-        paddingVertical:8
+        paddingHorizontal: 16,
+        paddingVertical: 4
     },
     headerPressable: {
         flexDirection: 'row',
@@ -79,7 +89,7 @@ const styles = StyleSheet.create((theme, rt) => ({
         width: '100%',
         height: '100%',
     },
-    captionName:{
-        fontSize:rt.fontScale * 15
+    captionName: {
+        fontSize: rt.fontScale * 15
     }
 }))

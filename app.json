@@ -24,8 +24,9 @@
       "predictiveBackGestureEnabled": false,
       "package": "com.devadiman.genshinImpact",
       "permissions": [
-        "android.permission.SET_WALLPAPER"
-      ],
+        "android.permission.SET_WALLPAPER",
+        "android.permission.INTERNET"
+      ]
     },
     "web": {
       "output": "static",
@@ -55,10 +56,14 @@
     ],
     "experiments": {
       "typedRoutes": true,
-      "reactCompiler": true
+      "reactCompiler": true,
+      "autolinkingModuleResolution":true
     },
-    "expo-router": {
-      "root": "./src/app"
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "6c489d92-a70c-4b5f-aabf-143fb6676820"
+      }
     }
   }
 }

@@ -5,12 +5,11 @@ import { useState } from 'react';
 import { ThemeIcons } from '@/src/components/themeIcons';
 import { Ionicons } from '@expo/vector-icons';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
-import { setWallpaperAsync, WallpaperMode } from '@/modules/my-wallpaper';
-import { DATA } from '@/src/utils/data';
 import { File, Paths, Directory } from 'expo-file-system'
+import { setWallpaperAsync, WallpaperMode } from '@/modules/my-wallpaper';
 
 export default function WallpaperDetail() {
-    const { id, imgUri } = useLocalSearchParams();
+    const { imgUri } = useLocalSearchParams();
     const router = useRouter();
     const { theme } = useUnistyles()
     const uriString = Array.isArray(imgUri) ? imgUri[0] : imgUri;
@@ -36,7 +35,7 @@ export default function WallpaperDetail() {
             }
             console.log("Downloading file...");
             const output = await File.downloadFileAsync(remoteUri, file);
-            console.log("output-->",output)
+            console.log("output-->", output)
             return output.uri;
         } catch (error) {
             console.error("Download failed:", error);
@@ -62,16 +61,12 @@ export default function WallpaperDetail() {
             } else {
                 finalUri = source.toString();
             }
-            console.log("--->", DATA[1])
-            console.log("finalUri-->", finalUri)
             const downloadedFile = await createDirectory(finalUri)
-            console.log("dow-->",downloadedFile)
             // 2. Call the Native Module (Cleaned up to match example structure)
-            const a = await setWallpaperAsync(downloadedFile, selectedLocation);
-            console.log("from a--->", a)
+            await setWallpaperAsync(finalUri, selectedLocation);
             // 3. Success Alert
             Alert.alert("Success", "Wallpaper updated successfully!", [
-                { text: "OK", onPress: () => router.back() }
+                { text: "OK", }
             ]);
 
         } catch (error: any) {

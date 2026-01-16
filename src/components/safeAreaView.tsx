@@ -1,24 +1,26 @@
-import { StyleProp, View, ViewStyle } from "react-native";
+import { StyleProp, View, ViewProps, ViewStyle } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { StyleSheet } from 'react-native-unistyles';
 
-interface SafeAreaViewProp {
+interface SafeAreaViewProp extends ViewProps {
     children: React.ReactNode;
-    style?:StyleProp<ViewStyle>
+    style?: StyleProp<ViewStyle>
 }
 
-export default function SafeAreaView({ children,style }: SafeAreaViewProp) {
+export default function SafeAreaView({ children, style, ...props }: SafeAreaViewProp) {
     const inset = useSafeAreaInsets();
 
     return (
-        <View style={[
-            styles.container,
-            style,
-            {
-                paddingTop: inset.top,
-                paddingHorizontal:8
-            }
-        ]}>
+        <View
+            {...props}
+            style={[
+                styles.container,
+                style,
+                {
+                    paddingTop: inset.top,
+                    paddingHorizontal: 8
+                }
+            ]}>
             {children}
         </View>
     )

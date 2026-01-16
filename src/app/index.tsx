@@ -1,7 +1,5 @@
-import { useEffect, useState } from "react";
-import { ActivityIndicator, View } from "react-native";
-import { Redirect, router } from "expo-router";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { View } from "react-native";
+import { router } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
 
@@ -13,44 +11,11 @@ import { Feather } from "@expo/vector-icons";
 import { Image } from 'expo-image';
 
 export default function WelcomeScreen() {
-    const [isLoading, setIsLoading] = useState(true);
-    const [isFirstLaunch, setIsFirstLaunch] = useState(false);
     const { theme } = useUnistyles();
 
-    useEffect(() => {
-        checkFirstLaunch();
-    }, []);
-
-    const checkFirstLaunch = async () => {
-        try {
-            const hasLaunched = await AsyncStorage.getItem("hasLaunched");
-            setIsFirstLaunch(hasLaunched === null);
-        } catch (e) {
-            setIsFirstLaunch(true);
-        } finally {
-            setIsLoading(false);
-        }
+    const handleGetStarted = () => {
+        router.replace('/(auth)');
     };
-    const handleGetStarted = async () => {
-        try {
-            await AsyncStorage.setItem('hasLaunched', 'true');
-            router.replace('/(tabs)');
-        } catch (error) {
-            console.log('Error saving launch status:', error);
-        }
-    };
-
-    if (isLoading) {
-        return (
-            <SafeAreaView style={styles.loader}>
-                <ActivityIndicator size="large" />
-            </SafeAreaView>
-        );
-    }
-
-    if (!isFirstLaunch) {
-        return <Redirect href="/(tabs)" />;
-    }
 
     return (
         <SafeAreaView style={styles.container}>
@@ -112,41 +77,28 @@ const styles = StyleSheet.create((theme) => ({
         flex: 1,
         paddingHorizontal: 24,
     },
-
-    loader: {
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-    },
-
     row: {
         flexDirection: "row",
     },
-
     imageContainer: {
         marginTop: 16,
         paddingHorizontal: 8,
     },
-
     firstImage: {
         height: 220,
         width: "100%",
         borderRadius: 32,
     },
-
     gridImage: {
         height: 200,
         borderRadius: 32,
     },
-
     grid40: {
         width: "40%",
     },
-
     grid55: {
         width: "55%",
     },
-
     gradient: {
         position: "absolute",
         left: 0,
@@ -154,7 +106,6 @@ const styles = StyleSheet.create((theme) => ({
         bottom: 0,
         height: 280,
     },
-
     content: {
         paddingBottom: 32,
         alignItems: "center",
