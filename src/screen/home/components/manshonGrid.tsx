@@ -1,65 +1,86 @@
-import { DATA } from "@/src/utils/data";
 import { FlashList } from "@shopify/flash-list";
 import { useRouter } from "expo-router";
-import { useMemo } from "react";
-import { Pressable } from "react-native";
+import React, { useCallback, useEffect, useState } from "react";
+import { ActivityIndicator, } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
-import { Image } from 'expo-image';
-import { FavoriteButton } from "./favoriteButton";
+import { getWallpaper, WallpaperProps } from "@/src/services/wallpaperService";
+import { FavoriteItem } from "@/src/components/favoriteItem";
 
-export const ManshonGrid = () => {
+export const ManshonGrid = ({ collectionId, type }: { collectionId?: string, type?: 'group' | 'item' }) => {
+    const [wallpaper, setWallpaper] = useState<WallpaperProps[]>([])
+    const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [isFetchingMore, setIsFetchingMore] = useState<boolean>(false)
+    const [hasMore, setHasMore] = useState<boolean>(true);
     const route = useRouter()
-    const extendedData = useMemo(() => {
-        return DATA.map((img, index) => ({
-            id: index.toString(),
-            imgSource: img,
-            height: Math.floor(Math.random() * 100) + 200
-        }))
-    }, [])
+
+    useEffect(() => {
+        setWallpaper([])
+        setHasMore(true)
+        loadWallpaperData(true)
+    }, [collectionId, type])
+
+    const loadWallpaperData = async (isInitialLoad = false) => {
+        if (!hasMore || (isFetchingMore && !isInitialLoad)) return;
+        if (isInitialLoad) {
+            setIsLoading(true)
+        } else {
+            setIsFetchingMore(true)
+        }
+        try {
+            const lastId = !isInitialLoad && wallpaper.length > 0
+                ? wallpaper[wallpaper.length - 1].id
+                : undefined;
+            const newBatch = await getWallpaper(collectionId, type, lastId);
+            if (newBatch.length === 0) {
+                setHasMore(false);
+            } else {
+                setWallpaper(prev => isInitialLoad ? newBatch : [...prev, ...newBatch])
+            }
+        } catch (error) {
+            console.error("fail to fetch wallpaper:", error)
+        } finally {
+            setIsLoading(false)
+            setIsFetchingMore(false)
+        }
+    }
+    const renderFooter = () => {
+        if (!isFetchingMore) return null;
+        return <ActivityIndicator size="small" style={{ marginTop: 20 }} />;
+    }
+
+
+    const openWallpaperRoute = useCallback((item: WallpaperProps) => {
+        route.push({
+            pathname: '/wallpaper/[id]',
+            params: {
+                id: item.id,
+                imageSource: item.imageSource,
+            }
+        })
+    }, [route])
+
+    if (isLoading && wallpaper.length === 0) {
+        return <ActivityIndicator size="large" style={{ marginTop: 20 }} />;
+    }
+
     return (
         <FlashList
-            data={extendedData}
+            data={wallpaper}
             masonry
             numColumns={2}
             contentContainerStyle={styles.container}
             showsVerticalScrollIndicator={false}
+            onEndReached={() => loadWallpaperData(false)}
+            onEndReachedThreshold={0.5}
+            ListFooterComponent={renderFooter}
             renderItem={({ item }) => (
-                <Pressable
-                    onPress={() => {
-                        route.push({
-                            pathname: '/wallpaper/[id]',
-                            params: {
-                                id: item.id,
-                                imgUri: item.imgSource,
-                            }
-                        })
-                    }}
-                    style={styles.card}>
-                    <Image source={item.imgSource} style={[styles.image, { height: item.height }]} />
-                    <FavoriteButton wallpaper={{id:item.id,url:item.imgSource}}/>
-                </Pressable>
+                <FavoriteItem item={item} openWallpaperRoute={openWallpaperRoute} />
             )}
         />
     )
 }
-
 const styles = StyleSheet.create((theme) => ({
     container: {
         paddingHorizontal: 8,
     },
-    card: {
-        margin: 8,
-        borderRadius: 16,
-        overflow: 'hidden',
-        backgroundColor: theme.colors.card,
-        position: 'relative'
-    },
-    image: {
-        width: '100%',
-    },
-    heart: {
-        position: 'absolute',
-        top: 8,
-        right: 6
-    }
 }))

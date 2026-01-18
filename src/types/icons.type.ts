@@ -9,16 +9,16 @@ import Fontisto from '@expo/vector-icons/Fontisto';
 import Octicons from '@expo/vector-icons/Octicons';
 import { AntDesign } from "@expo/vector-icons";
 
-type Fontisto = keyof typeof Fontisto.glyphMap;
-type Ionicons = keyof typeof Ionicons.glyphMap;
-type FontAwesome = keyof typeof FontAwesome.glyphMap;
-type MaterialCommunityIcons = keyof typeof MaterialCommunityIcons.glyphMap
-type FontAwesome6 = keyof typeof FontAwesome6.glyphMap;
-type MaterialIcons = keyof typeof MaterialIcons.glyphMap;
-type Entypo = keyof typeof Entypo.glyphMap;
-type Feather = keyof typeof Feather.glyphMap;
-type Octicons = keyof typeof Octicons.glyphMap
-type AntDesign = keyof typeof AntDesign.glyphMap
+type FontistoType = keyof typeof Fontisto.glyphMap;
+type IoniconsType = keyof typeof Ionicons.glyphMap;
+type FontAwesomeType = keyof typeof FontAwesome.glyphMap;
+type MaterialCommunityIconsType = keyof typeof MaterialCommunityIcons.glyphMap
+type FontAwesome6Type = keyof typeof FontAwesome6.glyphMap;
+type MaterialIconsType = keyof typeof MaterialIcons.glyphMap;
+type EntypoType = keyof typeof Entypo.glyphMap;
+type FeatherType = keyof typeof Feather.glyphMap;
+type OcticonsType = keyof typeof Octicons.glyphMap
+type AntDesignType = keyof typeof AntDesign.glyphMap
 export type IconComponent =
     | typeof Ionicons
     | typeof FontAwesome
@@ -32,5 +32,5 @@ export type IconComponent =
     | typeof AntDesign
     ;
 
-export type AllIcons = AntDesign | Ionicons | FontAwesome | Octicons | Fontisto | FontAwesome6 | MaterialIcons | MaterialCommunityIcons | Entypo | Feather;
+export type AllIcons = AntDesignType | IoniconsType | FontAwesomeType | OcticonsType | FontistoType | FontAwesome6Type | MaterialIconsType | MaterialCommunityIconsType | EntypoType | FeatherType;
 

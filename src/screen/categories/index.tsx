@@ -4,11 +4,32 @@ import { BannerCarousel } from "../home/components/bannerCarousel"
 import { Space } from "@/src/components/space"
 import { CategorySection } from "./components/categorySection"
 import { FlashList } from "@shopify/flash-list"
-import { categorieslist } from "@/src/utils/categoriesList"
 import { useRouter } from "expo-router"
+import { useEffect, useState } from "react"
+import { CategoryGroup, getCategories } from "@/src/services/categoryServices"
+import { ActivityIndicator } from "react-native"
 
 export const Categories = () => {
     const router = useRouter()
+    const [data, setData] = useState<CategoryGroup[]>([])
+    const [isLoading, setIsLoading] = useState<boolean>(true);
+    useEffect(() => {
+        loadLoad()
+    }, [])
+    const loadLoad = async () => {
+        try {
+            const categories = await getCategories()
+            setData(categories)
+        } catch (error) {
+            console.error("Error on Categories Screen", error)
+            throw Error
+        } finally {
+            setIsLoading(false)
+        }
+    }
+    if (isLoading) {
+        return <ActivityIndicator size="large" style={{ marginTop: 50 }} />;
+    }
     return (
         <SafeAreaView>
             <Space height={16} />
@@ -17,18 +38,25 @@ export const Categories = () => {
             <BannerCarousel />
             <Space height={24} />
             <FlashList
-                data={categorieslist}
-                renderItem={({ item }) => (
-                    <CategorySection onPress={() => {
-                        router.push({
-                            pathname: '/collection/[id]',
-                            params: {
-                                id: item.id,
-                                name: item.groupName
-                            }
-                        })
-                    }} id={item.id} items={item.items} groupName={item.groupName} />
-                )}
+                data={data}
+                renderItem={({ item }) => {
+                    return (
+                        <CategorySection
+                            onPress={() => {
+                                router.push({
+                                    pathname: '/category/[id]',
+                                    params: {
+                                        id: item.id,
+                                        name: item.groupName
+                                    }
+                                })
+                            }}
+                            id={item.id}
+                            items={item.items}
+                            groupName={item.groupName}
+                        />
+                    )
+                }}
             />
         </SafeAreaView>
     )

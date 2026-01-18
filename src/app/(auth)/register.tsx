@@ -6,9 +6,9 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Feather } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import SafeAreaView from '@/src/components/safeAreaView';
-import { useAuthStore } from '@/src/store/auth';
 import { ThemeText } from '@/src/components/themeText';
 import { Space } from '@/src/components/space';
+import { useAuth } from '@/src/context/AuthContext';
 
 export default function RegisterScreen() {
     const [email, setEmail] = useState('');
@@ -16,7 +16,7 @@ export default function RegisterScreen() {
     const [name, setName] = useState('');
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
-    const { createAccount } = useAuthStore();
+    const { createAccount } = useAuth();
     const router = useRouter();
     const { theme } = useUnistyles();
 
@@ -44,9 +44,9 @@ export default function RegisterScreen() {
                 contentFit="cover"
             />
             <View style={styles.overlay} />
-            
+
             <SafeAreaView style={[styles.safeArea, { backgroundColor: 'transparent' }]}>
-                <KeyboardAvoidingView 
+                <KeyboardAvoidingView
                     behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                     style={styles.flex}
                 >

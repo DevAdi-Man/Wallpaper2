@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react"
 import { Dimensions, View } from "react-native"
 import { StyleSheet } from "react-native-unistyles"
-import Animated, { Extrapolation, interpolate, useAnimatedScrollHandler, useAnimatedStyle, useDerivedValue, useSharedValue, withTiming } from 'react-native-reanimated';
+import Animated, { Extrapolation, interpolate, useAnimatedScrollHandler, useAnimatedStyle, useDerivedValue, useSharedValue } from 'react-native-reanimated';
 import { Space } from "@/src/components/space";
 
 const Data = [
@@ -127,26 +127,30 @@ export const BannerCarousel = () => {
             {/* Pagination */}
             <View style={styles.dots}>
                 {Data.map((_, i) => {
-                    const dotStyle = useAnimatedStyle(() => {
-                        const width = interpolate(
-                            progress.value,
-                            [i - 1, i, i + 1],
-                            [8, 28, 8],
-                            Extrapolation.CLAMP
-                        )
-                        const opacity = interpolate(
-                            progress.value,
-                            [i - 1, i, i + 1],
-                            [0.5, 1, 0.5],
-                            Extrapolation.CLAMP
-                        )
-                        return { width, opacity, }
-                    })
-                    return <Animated.View key={i} style={[styles.dot, dotStyle]} />
+                    return <Dots key={i} i={i} progress={progress} />
                 })}
             </View>
         </View >
     )
+}
+
+const Dots = ({ i, progress }: { i: number, progress: any }) => {
+    const gStyle = useAnimatedStyle(() => {
+        const width = interpolate(
+            progress.value,
+            [i - 1, i, i + 1],
+            [8, 28, 8],
+            Extrapolation.CLAMP
+        )
+        const opacity = interpolate(
+            progress.value,
+            [i - 1, i, i + 1],
+            [0.5, 1, 0.5],
+            Extrapolation.CLAMP
+        )
+        return { width, opacity }
+    })
+    return <Animated.View style={[styles.dot, gStyle]} />
 }
 
 const styles = StyleSheet.create((theme, rt) => ({

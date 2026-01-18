@@ -60,7 +60,7 @@ const styles = StyleSheet.create((theme) => ({
     safe: {
         flexDirection: 'row',
         justifyContent: 'space-around',
-        height: 60,
+        height: 80,
         alignItems: 'center'
     },
     container: {

@@ -1,19 +1,15 @@
+import { WallpaperProps } from '@/src/services/wallpaperService'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
 
-export type Wallpaper = {
-    id: string,
-    url: string,
-    title?: string,
-}
 
 type state = {
-    favorites: Wallpaper[]
+    favorites: WallpaperProps[]
 }
 
 type action = {
-    toggleFav: (wallpaper: Wallpaper) => void,
+    toggleFav: (wallpaper: WallpaperProps) => void,
     removeFav: (id: string) => void
 }
 

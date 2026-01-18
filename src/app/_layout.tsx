@@ -4,47 +4,55 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from "react";
 import { StatusBar } from 'expo-status-bar';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
-import { useAuthStore } from "../store/auth";
+import { AuthProvider, useAuth } from "../context/AuthContext";
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 SplashScreen.preventAutoHideAsync();
+SplashScreen.setOptions({
+    duration: 1000,
+    fade: true
+})
+function RootLayoutNav() {
+    const { user, isLoading } = useAuth();
 
-export default function RootLayout() {
-    const { user, isLoading, hasHydrated } = useAuthStore();
+    useEffect(() => {
+        if (!isLoading) {
+            SplashScreen.hideAsync()
+        }
+    }, [isLoading]);
 
     useEffect(() => {
         const prepareApp = async () => {
-            if (!hasHydrated) return;
-            try {
-                await ScreenOrientation.unlockAsync();
-            } finally {
-                await SplashScreen.hideAsync();
-            }
+            await ScreenOrientation.unlockAsync();
         };
-
         prepareApp();
-    }, [hasHydrated])
-
-    if (!hasHydrated || isLoading) return null;
+    }, []);
+    if (isLoading) {
+        return null;
+    }
 
     return (
-        <KeyboardProvider>
-            <StatusBar />
-            <Stack
-                screenOptions={{
-                    headerShown: false,
-                    animation: 'slide_from_right',
-                }}
-            >
-                <Stack.Protected guard={!user}>
-                    <Stack.Screen name="index" options={{ animation: 'fade' }} />
-                    <Stack.Screen name="(auth)" />
-                </Stack.Protected>
-                <Stack.Protected guard={!!user}>
-                    <Stack.Screen name="(tabs)" />
-                </Stack.Protected>
-            </Stack>
-        </KeyboardProvider>
+        <Stack screenOptions={{ headerShown: false, animation: 'slide_from_right' }}>
+            <Stack.Protected guard={!user}>
+                <Stack.Screen name="index" options={{ animation: 'fade' }} />
+                <Stack.Screen name="(auth)" />
+            </Stack.Protected>
+            <Stack.Protected guard={!!user}>
+                <Stack.Screen name="(tabs)" />
+            </Stack.Protected>
+        </Stack>
     );
 }
 
-
+export default function RootLayout() {
+    return (
+        <GestureHandlerRootView>
+            <AuthProvider>
+                <KeyboardProvider>
+                    <StatusBar />
+                    <RootLayoutNav />
+                </KeyboardProvider>
+            </AuthProvider>
+        </GestureHandlerRootView>
+    );
+}

@@ -6,9 +6,9 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Feather } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import SafeAreaView from '@/src/components/safeAreaView';
-import { useAuthStore } from '@/src/store/auth';
 import { ThemeText } from '@/src/components/themeText';
 import { Space } from '@/src/components/space';
+import { useAuth } from '@/src/context/AuthContext';
 
 export default function LoginScreen() {
     const [email, setEmail] = useState('');
@@ -16,7 +16,7 @@ export default function LoginScreen() {
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const router = useRouter();
-    const { login } = useAuthStore();
+    const { login } = useAuth();
     const { theme } = useUnistyles();
 
     const handleLogin = async () => {
@@ -43,9 +43,9 @@ export default function LoginScreen() {
                 contentFit="cover"
             />
             <View style={styles.overlay} />
-            
+
             <SafeAreaView style={[styles.safeArea, { backgroundColor: 'transparent' }]}>
-                <KeyboardAvoidingView 
+                <KeyboardAvoidingView
                     behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                     style={styles.flex}
                 >
@@ -108,7 +108,7 @@ export default function LoginScreen() {
                                 <Space height={24} />
 
                                 <View style={styles.footer}>
-                                    <ThemeText variant="body" style={styles.footerText}>Don't have an account? </ThemeText>
+                                    <ThemeText variant="body" style={styles.footerText}>Don&apos;t have an account? </ThemeText>
                                     <Link href="/(auth)/register" asChild>
                                         <Pressable>
                                             <ThemeText variant="body" style={styles.link}>Sign Up</ThemeText>

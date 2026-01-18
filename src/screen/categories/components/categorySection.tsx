@@ -1,12 +1,12 @@
 import { ThemeIcons } from "@/src/components/themeIcons"
 import { ThemeText } from "@/src/components/themeText"
-import { CategoryGroup } from "@/src/utils/categoriesList"
 import { AntDesign } from "@expo/vector-icons"
 import { FlashList } from "@shopify/flash-list"
 import { Pressable, View } from "react-native"
 import { StyleSheet } from "react-native-unistyles"
 import { Image } from 'expo-image';
 import { useRouter } from "expo-router"
+import { CategoryGroup } from "@/src/services/categoryServices"
 interface CategorySectionProps extends CategoryGroup {
     onPress?: () => void
 }

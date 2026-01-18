@@ -43,6 +43,10 @@
           "backgroundColor": "#ffffff",
           "dark": {
             "backgroundColor": "#000000"
+          },
+          "animation": {
+            "type": "fade",
+            "duration": 1000
           }
         }
       ],
@@ -52,7 +56,8 @@
           "initialOrientation": "DEFAULT"
         }
       ],
-      "react-native-edge-to-edge"
+      "react-native-edge-to-edge",
+      "./plugins/withWallpaperFix"
     ],
     "experiments": {
       "typedRoutes": true,

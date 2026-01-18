@@ -1,4 +1,4 @@
-import { useLocalSearchParams, Stack, useRouter } from 'expo-router';
+import { useLocalSearchParams, Stack  } from 'expo-router';
 import { View, Alert, Pressable, Text, Image as RNImage, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { Image } from 'expo-image';
 import { useState } from 'react';
@@ -9,10 +9,9 @@ import { File, Paths, Directory } from 'expo-file-system'
 import { setWallpaperAsync, WallpaperMode } from '@/modules/my-wallpaper';
 
 export default function WallpaperDetail() {
-    const { imgUri } = useLocalSearchParams();
-    const router = useRouter();
+    const {id, imageSource } = useLocalSearchParams();
     const { theme } = useUnistyles()
-    const uriString = Array.isArray(imgUri) ? imgUri[0] : imgUri;
+    const uriString = Array.isArray(imageSource) ? imageSource[0] : imageSource;
     const source = uriString && !isNaN(Number(uriString)) ? Number(uriString) : uriString;
 
     const [selectedLocation, setSelectedLocation] = useState<WallpaperMode>('home');
@@ -33,9 +32,7 @@ export default function WallpaperDetail() {
                 console.log("File already exists locally, using cache:", file.uri);
                 return file.uri;
             }
-            console.log("Downloading file...");
             const output = await File.downloadFileAsync(remoteUri, file);
-            console.log("output-->", output)
             return output.uri;
         } catch (error) {
             console.error("Download failed:", error);
@@ -51,7 +48,6 @@ export default function WallpaperDetail() {
 
         try {
             setIsSetting(true);
-            console.log(`Setting wallpaper... Location: ${selectedLocation}`);
 
             // 1. Resolve URI (Keep this logic, it is required for your specific app structure)
             let finalUri: string;
@@ -61,9 +57,9 @@ export default function WallpaperDetail() {
             } else {
                 finalUri = source.toString();
             }
-            const downloadedFile = await createDirectory(finalUri)
             // 2. Call the Native Module (Cleaned up to match example structure)
-            await setWallpaperAsync(finalUri, selectedLocation);
+            const lastUri = await createDirectory(finalUri)
+            await setWallpaperAsync(lastUri, selectedLocation);
             // 3. Success Alert
             Alert.alert("Success", "Wallpaper updated successfully!", [
                 { text: "OK", }
