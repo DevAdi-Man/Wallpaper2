@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import { Image } from 'expo-image';
@@ -8,15 +8,18 @@ import { GestureDetector, Gesture } from "react-native-gesture-handler";
 import { Ionicons } from "@expo/vector-icons";
 import { useFavourites } from "../screen/favorites/store/favourites";
 
+const AnimatedImage = Animated.createAnimatedComponent(Image);
+
 interface WallpaperItemProps {
     item: WallpaperProps;
     openWallpaperRoute: (item: WallpaperProps) => void;
 }
+
 export const FavoriteItem = React.memo(({ item, openWallpaperRoute }: WallpaperItemProps) => {
     // Define value for animation
     const scale = useSharedValue(0);
-
-    const toggleFav = useFavourites(states => states.toggleFav)
+    const [heartColor, setHeartColor] = useState<string>('white')
+    const toggleFav = useFavourites(state => state.toggleFav)
     const isFavorite = useFavourites(state =>
         state.favorites.some(f => f.id === item.id)
     );
@@ -42,8 +45,17 @@ export const FavoriteItem = React.memo(({ item, openWallpaperRoute }: WallpaperI
             .numberOfTaps(2)
             .runOnJS(true)
             .onEnd(() => {
+                const color = isFavorite ? 'white' : 'red';
+                setHeartColor(color);
+
                 onLike()
-                toggleFav({ id: item.id, imageSource: item.imageSource,height:item.height })
+                setTimeout(() => {
+                    toggleFav({
+                        id: item.id,
+                        imageSource: item.imageSource,
+                        height: item.height
+                    })
+                },700)
             })
 
         const singleTap = Gesture.Tap()
@@ -53,13 +65,18 @@ export const FavoriteItem = React.memo(({ item, openWallpaperRoute }: WallpaperI
                 openWallpaperRoute(item)
             })
         return Gesture.Exclusive(doubleTab, singleTap);
-    }, [item, openWallpaperRoute, scale])
+    }, [item, openWallpaperRoute, scale, isFavorite, toggleFav])
     return (
         <GestureDetector gesture={gesture}>
             <View style={styles.card}>
-                <Image source={item.imageSource} style={[styles.image, { height: item.height }]} />
+                <AnimatedImage
+                    source={item.imageSource}
+                    style={[styles.image, { height: item.height }]}
+                    // @ts-ignore
+                    sharedTransitionTag={`wallpaper-${item.id}`}
+                />
                 <Animated.View style={[styles.heart, likeHeart]}>
-                    <Ionicons name="heart" size={50} color="white" />
+                    <Ionicons name="heart" size={50} color={heartColor} />
                 </Animated.View>
                 {isFavorite && (
                     <View style={styles.iconContainer}>

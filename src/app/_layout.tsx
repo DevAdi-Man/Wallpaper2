@@ -6,6 +6,12 @@ import { StatusBar } from 'expo-status-bar';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { AuthProvider, useAuth } from "../context/AuthContext";
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { configureReanimatedLogger, ReanimatedLogLevel } from 'react-native-reanimated';
+
+configureReanimatedLogger({
+    level: ReanimatedLogLevel.warn,
+    strict: false,
+});
 
 SplashScreen.preventAutoHideAsync();
 SplashScreen.setOptions({

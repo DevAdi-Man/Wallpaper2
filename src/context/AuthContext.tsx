@@ -1,19 +1,29 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { ID, Models } from 'react-native-appwrite';
-import { account } from '../lib/appwrite';
+import { account, appwriteConfig, tableDb } from '../lib/appwrite';
+import { userServices } from '../services/userServices';
 
 interface AuthContextType {
     user: Models.User<Models.Preferences> | null;
     isLoading: boolean;
+    userProfile: UserProfile | null;
     login: (email: string, password: string) => Promise<void>;
     logout: () => Promise<void>;
     createAccount: (email: string, password: string, name: string) => Promise<void>;
+    refreshProfile: () => Promise<void>;
 }
-
+interface UserProfile {
+    avatarUrl: string | null;
+    coverUrl: string | null;
+    accountId: string;
+    name: string,
+    email: string,
+}
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [user, setUser] = useState<Models.User<Models.Preferences> | null>(null);
+    const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
@@ -27,6 +37,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             setUser(currentUser);
         } catch (error) {
             setUser(null);
+            setUserProfile(null)
             console.log(error)
         } finally {
             setIsLoading(false);
@@ -46,6 +57,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             const currentUser = await account.get();
             setUser(currentUser);
 
+            const profile = await userServices.getUserProfiele(currentUser.$id,currentUser.name,email);
+            setUserProfile(profile);
+
         } catch (error) {
             console.error("Login failed:", error);
             throw error;
@@ -60,21 +74,31 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 sessionId: 'current'
             });
             setUser(null);
+            setUserProfile(null);
         } catch (error) {
             console.error("LogoutFail: ", error)
         }
     };
 
+    const refreshProfile = async () => {
+        if (!user) return;
+        const profile = await userServices.getUserProfiele(user.$id,user.name,user.email);
+        setUserProfile(profile)
+    }
+
     const createAccount = async (email: string, password: string, name: string) => {
         setIsLoading(true)
         try {
-            await account.create({
+            const newAccount = await account.create({
                 userId: ID.unique(),
                 email: email,
                 password: password,
                 name: name
             });
-            await login(email,password)
+            await login(email, password)
+            await userServices.createProfileDocument(newAccount.$id);
+
+            await refreshProfile()
         } catch (e) {
             console.error("Registration error:", e)
             throw e;
@@ -84,7 +108,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ user, isLoading, login, logout, createAccount }}>
+        <AuthContext.Provider value={{userProfile,refreshProfile, user, isLoading, login, logout, createAccount }}>
             {children}
         </AuthContext.Provider>
     );

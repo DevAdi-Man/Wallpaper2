@@ -1,4 +1,4 @@
-import { Client, Account, Databases, Storage, TablesDB } from 'react-native-appwrite';
+import { Client, Account, Databases, Storage, TablesDB, Avatars } from 'react-native-appwrite';
 import { Platform } from 'react-native';
 
 // const client = new Client();
@@ -37,7 +37,10 @@ export const appwriteConfig = {
     databasesID:process.env.EXPO_PUBLIC_APPWRITE_DATABASE_ID,
     wallpaperCollectionID:process.env.EXPO_PUBLIC_APPWRITE_WALLPAPER_COLLECTION_ID,
     categoriesCollectionID:process.env.EXPO_PUBLIC_APPWRITE_CATEGORIES_COLLECTION_ID,
-    subCategoriesCollectionID:process.env.EXPO_PUBLIC_APPWRITE_SUBCATEGORIES_COLLECTION_ID
+    subCategoriesCollectionID:process.env.EXPO_PUBLIC_APPWRITE_SUBCATEGORIES_COLLECTION_ID,
+    favoriteCollectionID:process.env.EXPO_PUBLIC_APPWRITE_FAVORITE_COLLECTION_ID,
+    userMediaBucketID:process.env.EXPO_PUBLIC_APPWRITE_USER_MEDIA_BUCKET_ID,
+    userCollectionID:process.env.EXPO_PUBLIC_APPWRITE_USER_COLLECTION_ID
 }
 
 export const client = new Client()
@@ -53,4 +56,5 @@ switch(Platform.OS){
 export const account = new Account(client);
 export const databases = new Databases(client);
 export const tableDb = new TablesDB(client);
-// export const storage = new Storage(client);
+export const storage = new Storage(client);
+export const avatar = new Avatars(client);

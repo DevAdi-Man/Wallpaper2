@@ -34,7 +34,6 @@ const withWallpaperFix = (config) => {
             mainActivity['android:configChanges'] = newConfigChanges.join('|');
 
             // 5. Enforce singleInstance to prevent "Multiple Linking" errors
-            mainActivity['android:launchMode'] = 'singleTask';
             mainActivity['android:exported'] = 'true';
         }
 

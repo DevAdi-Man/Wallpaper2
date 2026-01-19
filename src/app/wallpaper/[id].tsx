@@ -1,12 +1,17 @@
 import { useLocalSearchParams, Stack  } from 'expo-router';
 import { View, Alert, Pressable, Text, Image as RNImage, TouchableOpacity, ActivityIndicator } from 'react-native';
-import { Image } from 'expo-image';
-import { useState } from 'react';
+import { Image, ImageProps } from 'expo-image';
+import React, { useState } from 'react';
 import { ThemeIcons } from '@/src/components/themeIcons';
 import { Ionicons } from '@expo/vector-icons';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 import { File, Paths, Directory } from 'expo-file-system'
 import { setWallpaperAsync, WallpaperMode } from '@/modules/my-wallpaper';
+import Animated, { AnimatedProps } from 'react-native-reanimated';
+
+const AnimatedImage = Animated.createAnimatedComponent(Image) as React.ComponentType<
+    AnimatedProps<ImageProps>
+>;
 
 export default function WallpaperDetail() {
     const {id, imageSource } = useLocalSearchParams();
@@ -14,6 +19,7 @@ export default function WallpaperDetail() {
     const uriString = Array.isArray(imageSource) ? imageSource[0] : imageSource;
     const source = uriString && !isNaN(Number(uriString)) ? Number(uriString) : uriString;
 
+    const itemId = Array.isArray(id) ? id[0] : id;
     const [selectedLocation, setSelectedLocation] = useState<WallpaperMode>('home');
     const [isSetting, setIsSetting] = useState(false);
 
@@ -92,10 +98,12 @@ export default function WallpaperDetail() {
             }} />
 
             {source && (
-                <Image
+                <AnimatedImage
                     source={source}
                     style={styles.fullImage}
                     contentFit='cover'
+                    // @ts-ignore
+                    sharedTransitionTag={`wallpaper-${itemId}`}
                 />
             )}
             <View style={styles.bottomBar}>

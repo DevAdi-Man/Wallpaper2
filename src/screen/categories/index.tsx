@@ -7,7 +7,8 @@ import { FlashList } from "@shopify/flash-list"
 import { useRouter } from "expo-router"
 import { useEffect, useState } from "react"
 import { CategoryGroup, getCategories } from "@/src/services/categoryServices"
-import { ActivityIndicator } from "react-native"
+import { ActivityIndicator, View } from "react-native"
+import { StyleSheet } from "react-native-unistyles"
 
 export const Categories = () => {
     const router = useRouter()
@@ -27,8 +28,13 @@ export const Categories = () => {
             setIsLoading(false)
         }
     }
+
     if (isLoading) {
-        return <ActivityIndicator size="large" style={{ marginTop: 50 }} />;
+        return (
+            <View style={styles.loader}>
+                <ActivityIndicator size="large" style={{ marginTop: 50 }} />
+            </View>
+        )
     }
     return (
         <SafeAreaView>
@@ -61,3 +67,11 @@ export const Categories = () => {
         </SafeAreaView>
     )
 }
+const styles = StyleSheet.create((theme) => ({
+    loader: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: theme.colors.background
+    },
+}))

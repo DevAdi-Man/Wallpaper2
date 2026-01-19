@@ -21,6 +21,7 @@
     "expo-font": "~14.0.10",
     "expo-haptics": "~15.0.8",
     "expo-image": "~3.0.11",
+    "expo-image-picker": "~17.0.10",
     "expo-linear-gradient": "~15.0.8",
     "expo-linking": "~8.0.11",
     "expo-router": "~6.0.21",
@@ -54,5 +55,13 @@
     "eslint-config-expo": "~10.0.0",
     "typescript": "~5.9.2"
   },
-  "private": true
+  "private": true,
+  "reanimated": {
+    "staticFeatureFlags": {
+      "ENABLE_SHARED_ELEMENT_TRANSITIONS": true,
+      "USE_SYNCHRONIZABLE_FOR_MUTABLES": true,
+      "USE_COMMIT_HOOK_ONLY_FOR_REACT_COMMITS": true,
+      "FORCE_REACT_RENDER_FOR_SETTLED_ANIMATIONS": true
+    }
+  }
 }
