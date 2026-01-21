@@ -7,16 +7,15 @@ import { useEffect } from "react"
 import { useFavourites } from "../favorites/store/favourites"
 
 export const Home = () => {
-    const {user} = useAuth();
-    const setUserId = useFavourites(state=> state.setUserId)
-    const fetchFavoritet = useFavourites(state=>state.fetchFavorites)
-    useEffect(()=>{
-        if(user && user.$id){
-            console.log("✅ Syncing User to Store:", user.$id);
+    const { user } = useAuth();
+    const setUserId = useFavourites(state => state.setUserId)
+    const fetchFavoritet = useFavourites(state => state.fetchFavorites)
+    useEffect(() => {
+        if (user && user.$id) {
             setUserId(user.$id);
             fetchFavoritet();
         }
-    },[user])
+    }, [user])
     return (
         <SafeAreaView>
             <ThemeText variant="title" style={{ paddingHorizontal: 8 }}>Pixory</ThemeText>

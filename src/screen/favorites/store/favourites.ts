@@ -31,7 +31,6 @@ export const useFavourites = create<state & action>()(
             toggleFav: async (wallpaper) => {
                 const { favorites, userId } = get()
                 if (!userId) {
-                    console.warn("❌ Toggle blocked: No User ID found!");
                     return;
                 }
                 const exists = favorites.some((item) => item.id === wallpaper.id)
@@ -42,7 +41,6 @@ export const useFavourites = create<state & action>()(
                     try {
                         await removeFavorites(userId, wallpaper.id)
                     } catch (error) {
-                        console.error("Error when toggleFav exists", error)
                         set({ favorites: [...favorites, wallpaper] })
                     }
                 } else {

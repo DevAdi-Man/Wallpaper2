@@ -30,7 +30,7 @@ export const userServices = {
         } catch (error:any) {
             if (error.code === 404 || error.message?.includes('could not be found')) {
                 console.log("Profile DB entry missing. returning Ghost Profile.");
-
+                const initialsUrl = `${appwriteConfig.endpoint}/avatars/initials?name=${encodeURIComponent(userName)}&project=${appwriteConfig.projectId}&width=200&height=200`;
                 // Return a temporary "Ghost" profile so the app doesn't crash
                 return {
                     accountId: userId,
@@ -39,7 +39,7 @@ export const userServices = {
                     bio: "",
                     avatarId: null,
                     coverId: null,
-                    avatarUrl: avatar.getInitials({ name: userName }).toString(),
+                    avatarUrl: initialsUrl,
                     coverUrl: DEFAULT_COVER_IMAGE,
                     $id: userId,
                     $collectionId: appwriteConfig.userCollectionID!,
@@ -85,6 +85,7 @@ export const userServices = {
 
 
 const parseProfile = (row: UserDocument, userName: string): UserProfile => {
+    const initialsUrl = `${appwriteConfig.endpoint}/avatars/initials?name=${encodeURIComponent(userName)}&project=${appwriteConfig.projectId}&width=200&height=200`;
     return {
         ...row,
         avatarUrl: row.avatarId ? storage.getFilePreview({
@@ -94,7 +95,8 @@ const parseProfile = (row: UserDocument, userName: string): UserProfile => {
             height: 200,
             gravity: ImageGravity.Center,
             quality: 100
-        }).toString() : avatar.getInitials({ name: userName }).toString(),
+        }).toString() : initialsUrl,
+
         coverUrl: row.coverId
             ? storage.getFileView({
                 bucketId: appwriteConfig.userMediaBucketID!,

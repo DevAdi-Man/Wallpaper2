@@ -7,8 +7,9 @@ import { FlashList } from "@shopify/flash-list"
 import { useRouter } from "expo-router"
 import { useEffect, useState } from "react"
 import { CategoryGroup, getCategories } from "@/src/services/categoryServices"
-import { ActivityIndicator, View } from "react-native"
+import { ActivityIndicator, Button, View } from "react-native"
 import { StyleSheet } from "react-native-unistyles"
+import { useAuth } from "@/src/context/AuthContext"
 
 export const Categories = () => {
     const router = useRouter()
@@ -29,6 +30,10 @@ export const Categories = () => {
         }
     }
 
+    const { logout } = useAuth()
+    const handleLogout = async () => {
+        await logout()
+    }
     if (isLoading) {
         return (
             <View style={styles.loader}>
@@ -64,6 +69,7 @@ export const Categories = () => {
                     )
                 }}
             />
+            <Button title="logout" onPress={handleLogout}/>
         </SafeAreaView>
     )
 }

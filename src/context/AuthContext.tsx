@@ -1,7 +1,8 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { ID, Models } from 'react-native-appwrite';
-import { account, appwriteConfig, tableDb } from '../lib/appwrite';
+import { account } from '../lib/appwrite';
 import { userServices } from '../services/userServices';
+import { useFavourites } from '../screen/favorites/store/favourites';
 
 interface AuthContextType {
     user: Models.User<Models.Preferences> | null;
@@ -35,10 +36,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         try {
             const currentUser = await account.get();
             setUser(currentUser);
+            useFavourites.getState().setUserId(currentUser.$id);
+            const profile = await userServices.getUserProfiele(currentUser.$id, currentUser.name, currentUser.email);
+            setUserProfile(profile);
+            await useFavourites.getState().fetchFavorites();
         } catch (error) {
             setUser(null);
             setUserProfile(null)
-            console.log(error)
         } finally {
             setIsLoading(false);
         }
@@ -56,10 +60,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
             const currentUser = await account.get();
             setUser(currentUser);
-
-            const profile = await userServices.getUserProfiele(currentUser.$id,currentUser.name,email);
+            useFavourites.getState().setUserId(currentUser.$id);
+            const profile = await userServices.getUserProfiele(currentUser.$id, currentUser.name, email);
             setUserProfile(profile);
-
+            await refreshProfile()
+            await useFavourites.getState().fetchFavorites();
         } catch (error) {
             console.error("Login failed:", error);
             throw error;
@@ -75,6 +80,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             });
             setUser(null);
             setUserProfile(null);
+            useFavourites.getState().setUserId(null as any);
+            useFavourites.setState({ favorites: [] });
         } catch (error) {
             console.error("LogoutFail: ", error)
         }
@@ -82,7 +89,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     const refreshProfile = async () => {
         if (!user) return;
-        const profile = await userServices.getUserProfiele(user.$id,user.name,user.email);
+        const profile = await userServices.getUserProfiele(user.$id, user.name, user.email);
         setUserProfile(profile)
     }
 
@@ -108,7 +115,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     };
 
     return (
-        <AuthContext.Provider value={{userProfile,refreshProfile, user, isLoading, login, logout, createAccount }}>
+        <AuthContext.Provider value={{ userProfile, refreshProfile, user, isLoading, login, logout, createAccount }}>
             {children}
         </AuthContext.Provider>
     );

@@ -3,8 +3,8 @@ import { appwriteConfig, tableDb } from "../lib/appwrite"
 import { WallpaperProps } from "./wallpaperService"
 
 type WallpaperRow = Models.Row & {
-    imageSource:string,
-    height:number
+    imgSource: string,
+    height: number
 }
 
 type FavoriteRow = Models.Row & {
@@ -14,7 +14,7 @@ type FavoriteRow = Models.Row & {
 
 export const addFavorites = async (userId: string, wallpaperId: string) => {
     try {
-        await tableDb.createRow({
+         await tableDb.createRow({
             databaseId: appwriteConfig.databasesID!,
             tableId: appwriteConfig.favoriteCollectionID!,
             rowId: ID.unique(),
@@ -54,23 +54,37 @@ export const removeFavorites = async (userId: string, wallpaperId: string) => {
     }
 
 }
-export const getFavorites = async (userId: string): Promise<WallpaperProps[]> =>{
+export const getFavorites = async (userId: string): Promise<WallpaperProps[]> => {
     try {
-        const result = await tableDb.listRows<FavoriteRow>({
+        const result = await tableDb.listRows({
             databaseId: appwriteConfig.databasesID!,
             tableId: appwriteConfig.favoriteCollectionID!,
-            queries: [
-                Query.equal('userId', userId)
-            ]
+            queries: [Query.equal('userId', userId)]
         });
-        const clearData = result.rows.map((row)=>({
-        id:row.wallpapers.$id,
-        imageSource:row.wallpapers.imageSource,
-        height:row.wallpapers.height
-}))
-        return  clearData
+
+        const clearData: WallpaperProps[] = await Promise.all(
+            result.rows.map(async (row) => {
+                const a = await getWallpaper(row.wallpapers);
+
+                return {
+                    id: a.$id,
+                    imageSource: a.imgSource,
+                    height: a.height
+                };
+            })
+        );
+        return clearData
     } catch (error) {
         console.warn("Error on getting favorites", error)
         throw error
     }
+}
+
+const getWallpaper = async (wallpaperId: string) => {
+    const data = await tableDb.getRow({
+        databaseId: appwriteConfig.databasesID!,
+        tableId: appwriteConfig.wallpaperCollectionID!,
+        rowId: wallpaperId
+    })
+    return data
 }

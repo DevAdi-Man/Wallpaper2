@@ -5,13 +5,14 @@ import { useFavourites } from "./store/favourites"
 import { Space } from "@/src/components/space"
 import { FlashList } from "@shopify/flash-list"
 import { useRouter } from "expo-router"
-import { useCallback } from "react"
+import { useCallback, useEffect } from "react"
 import {  FavoriteItem } from "@/src/components/favoriteItem"
 import { WallpaperProps } from "@/src/services/wallpaperService"
 
 export const Favorites = () => {
     const route = useRouter()
     const Favorites = useFavourites((state) => state.favorites)
+    const {fetchFavorites} = useFavourites()
     const openWallpaperRoute = useCallback((item: WallpaperProps) => {
         route.push({
             pathname: '/wallpaper/[id]',
@@ -45,15 +46,5 @@ const styles = StyleSheet.create((theme) => ({
     },
     container: {
         paddingHorizontal: 8,
-    },
-    card: {
-        margin: 8,
-        borderRadius: 16,
-        overflow: 'hidden',
-        backgroundColor: theme.colors.card,
-        position: 'relative'
-    },
-    image: {
-        width: '100%',
     },
 }))

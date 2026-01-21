@@ -5,7 +5,7 @@ import { useAuth } from "@/src/context/AuthContext"
 import { Entypo, Feather } from "@expo/vector-icons"
 import { Image } from "expo-image"
 import { useState } from "react"
-import { ActivityIndicator, Alert, TouchableOpacity, View } from "react-native"
+import { ActivityIndicator, Alert, Button, TouchableOpacity, View } from "react-native"
 import Animated, { Extrapolation, interpolate, useAnimatedScrollHandler, useAnimatedStyle, useSharedValue } from "react-native-reanimated"
 import { StyleSheet } from "react-native-unistyles"
 import * as ImagePicker from 'expo-image-picker';
@@ -32,7 +32,6 @@ export const Profile = () => {
             [EXPANDED_HEIGHT + 100, EXPANDED_HEIGHT, COLLAPSED_HEIGHT],
             Extrapolation.CLAMP
         )
-
         return {
             height
         }
@@ -54,7 +53,6 @@ export const Profile = () => {
             [1, 0.6],
             Extrapolation.CLAMP
         )
-
         return {
             top,
             transform: [{ scale }]
@@ -63,7 +61,6 @@ export const Profile = () => {
 
     // pick an image function for cover and avatar upload and update
     const handleImageUpdate = async (type: 'avatar' | 'cover') => {
-        console.log("click")
         const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
         if (!permissionResult) {
             Alert.alert('Permission required', 'Permission to access the media library is required.');
@@ -89,7 +86,7 @@ export const Profile = () => {
             } catch (error) {
                 Alert.alert("Error", "Fails to Update image. Please try again.")
                 console.error(error)
-            }finally{
+            } finally {
                 setIsUploading(false)
             }
         }
@@ -108,16 +105,14 @@ export const Profile = () => {
     }
     return (
         <SafeAreaView>
-            <Animated.View style={[styles.header, headerStyle]}>
-                <Image style={styles.backgroundImage} source={{uri:userProfile.coverUrl as string}} />
-                <TouchableOpacity disabled={isUploading} onPress={() => handleImageUpdate('cover')} style={styles.headerEditIcon}>
-                    <ThemeIcons IconsName={Feather} name={"edit"} color="white" size={30} />
-                </TouchableOpacity>
+            <Animated.View pointerEvents={"box-none"} style={[styles.header, headerStyle]}>
+                <Image style={styles.backgroundImage} source={{ uri: userProfile.coverUrl as string }} contentFit="cover" />
+                <View style={styles.headerBorder} />
             </Animated.View>
             <Animated.View style={[styles.profileCotainer, profileStyle]}>
-                <Image style={[styles.profileImage]} source={require('@/assets/images/abstract1.jpg')} />
+                <Image style={[styles.profileImage]} source={{ uri: userProfile.avatarUrl as string }} />
                 <TouchableOpacity style={styles.profileIconContainer} disabled={isUploading} onPress={() => handleImageUpdate('avatar')}>
-                    <ThemeIcons IconsName={Entypo} name={"edit"} style={styles.profileIcon} size={30} />
+                    <ThemeIcons IconsName={Entypo} name={"edit"} style={styles.icon} size={30} />
                 </TouchableOpacity>
             </Animated.View>
             <Animated.ScrollView
@@ -127,12 +122,22 @@ export const Profile = () => {
                 showsVerticalScrollIndicator={false}
             >
                 <View style={styles.content}>
-                    <ThemeText variant="title" style={styles.nameText}>{userProfile.name}</ThemeText>
-                    {Array.from({ length: 15 }).map((_, i) => (
-                        <View key={i} style={styles.box} />
-                    ))}
+                    <ThemeText variant="title" style={styles.nameText}>{user?.name}</ThemeText>
                 </View>
             </Animated.ScrollView>
+            <Animated.View
+                style={[styles.header, headerStyle, { backgroundColor: 'transparent', zIndex: 100 }]}
+                pointerEvents="box-none"
+            >
+                <TouchableOpacity
+                    disabled={isUploading}
+                    onPress={() => handleImageUpdate('cover')}
+                    style={styles.headerEditIcon}
+                    activeOpacity={0.7}
+                >
+                    <ThemeIcons IconsName={Feather} name={"edit"} style={styles.icon}  size={30} />
+                </TouchableOpacity>
+            </Animated.View>
         </SafeAreaView>
     )
 }
@@ -143,18 +148,27 @@ const styles = StyleSheet.create((theme) => ({
         top: 0,
         left: 0,
         right: 0,
-        zIndex: 1,
-        backgroundColor: theme.colors.card,
+        zIndex: 20,
         overflow: 'hidden',
-        borderBottomWidth: 1,
-        borderBottomColor: '#eee'
+    },
+    headerBorder:{
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        height: 2,
+        backgroundColor: '#eee',
+        zIndex: 5,
+        marginHorizontal:16
     },
     headerEditIcon: {
         position: 'absolute',
         bottom: 10,
         right: 10,
-        backgroundColor:'red',
-        padding:8
+        padding: 8,
+        zIndex: 101,
+        borderRadius:40,
+        alignSelf:'center'
     },
     backgroundImage: {
         width: '100%',
@@ -164,7 +178,7 @@ const styles = StyleSheet.create((theme) => ({
         position: 'absolute',
         left: 0,
         right: 0,
-        zIndex: 10,
+        zIndex: 40,
         alignItems: 'center',
         justifyContent: 'center'
     },
@@ -173,8 +187,11 @@ const styles = StyleSheet.create((theme) => ({
         bottom: 30,
         right: 25,
     },
-    profileIcon:{
-        color: theme.colors.rarity.fiveStar
+    icon: {
+        color: theme.colors.rarity.fourStar,
+        backgroundColor: 'rgba(0,0,0,0.3)',
+        padding:8,
+        borderRadius:40
     },
     profileImage: {
         width: PROFILE_IMAGE_SIZE,
@@ -193,12 +210,6 @@ const styles = StyleSheet.create((theme) => ({
         fontWeight: 'bold',
         textAlign: 'center',
         marginBottom: 20
-    },
-    box: {
-        height: 100,
-        marginBottom: 20,
-        borderRadius: 12,
-        backgroundColor: theme.colors.card
     },
     loader: {
         flex: 1,
