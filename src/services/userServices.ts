@@ -1,5 +1,5 @@
-import { ID, ImageGravity, Models } from "react-native-appwrite"
-import { appwriteConfig, avatar, storage, tableDb } from "../lib/appwrite"
+import { ID, ImageGravity, Models, Permission, Role, } from "react-native-appwrite"
+import { appwriteConfig, storage, tableDb } from "../lib/appwrite"
 
 export interface UserDocument extends Models.Row {
     accountId: string;
@@ -11,11 +11,11 @@ export interface UserDocument extends Models.Row {
 }
 
 export interface UserProfile extends UserDocument {
-    avatarUrl: string;
-    coverUrl: string;
+    avatarUrl?: string | URL;
+    coverUrl?: string | URL;
 }
 
-const DEFAULT_COVER_IMAGE = "https://images.unsplash.com/photo-1614850523459-c2f4c699c52e?q=80&w=2070&auto=format&fit=crop";
+export const DEFAULT_COVER_IMAGE = "https://images.unsplash.com/photo-1614850523459-c2f4c699c52e?q=80&w=2070&auto=format&fit=crop";
 
 export const userServices = {
     getUserProfiele: async (userId: string, userName: string, email: string) => {
@@ -27,7 +27,7 @@ export const userServices = {
                 rowId: userId
             })
             return parseProfile(row, userName)
-        } catch (error:any) {
+        } catch (error: any) {
             if (error.code === 404 || error.message?.includes('could not be found')) {
                 console.log("Profile DB entry missing. returning Ghost Profile.");
                 const initialsUrl = `${appwriteConfig.endpoint}/avatars/initials?name=${encodeURIComponent(userName)}&project=${appwriteConfig.projectId}&width=200&height=200`;
@@ -86,28 +86,34 @@ export const userServices = {
 
 const parseProfile = (row: UserDocument, userName: string): UserProfile => {
     const initialsUrl = `${appwriteConfig.endpoint}/avatars/initials?name=${encodeURIComponent(userName)}&project=${appwriteConfig.projectId}&width=200&height=200`;
+    const avatarUrl = row.avatarId ? storage.getFilePreviewURL(
+        appwriteConfig.userMediaBucketID!,
+        row.avatarId,
+        200,
+        200,
+        ImageGravity.Center,
+        100
+    ).toString() : initialsUrl
+    const coverUrl = row.coverId
+        ? storage.getFilePreviewURL(
+            appwriteConfig.userMediaBucketID!,
+            row.coverId
+        ).toString() : DEFAULT_COVER_IMAGE;
     return {
         ...row,
-        avatarUrl: row.avatarId ? storage.getFilePreview({
-            bucketId: appwriteConfig.userMediaBucketID!,
-            fileId: row.avatarId,
-            width: 200,
-            height: 200,
-            gravity: ImageGravity.Center,
-            quality: 100
-        }).toString() : initialsUrl,
-
-        coverUrl: row.coverId
-            ? storage.getFileView({
-                bucketId: appwriteConfig.userMediaBucketID!,
-                fileId: row.coverId
-            }).toString()
-            : DEFAULT_COVER_IMAGE
+        avatarUrl: avatarUrl ?? initialsUrl,
+        coverUrl: coverUrl ?? DEFAULT_COVER_IMAGE
     }
 }
 
 const uploadAndUpdate = async (userId: string, userName: string, uri: string, fieldName: 'avatarId' | 'coverId') => {
     try {
+        const existingImg = await tableDb.getRow({
+            databaseId: appwriteConfig.databasesID!,
+            tableId: appwriteConfig.userCollectionID!,
+            rowId: userId,
+        });
+        const oldFileID = existingImg[fieldName]
         const file = {
             name: `${userId}_${fieldName}_${Date.now()}.jpg`,
             type: 'image/jpeg',
@@ -117,7 +123,12 @@ const uploadAndUpdate = async (userId: string, userName: string, uri: string, fi
         const uploaded = await storage.createFile({
             bucketId: appwriteConfig.userMediaBucketID!,
             fileId: ID.unique(),
-            file: file
+            file: file,
+            permissions: [
+                Permission.read(Role.user(userId)),
+                Permission.update(Role.user(userId)),
+                Permission.delete(Role.user(userId)),
+            ]
         });
         const updateDoc = await tableDb.updateRow<UserDocument>({
             databaseId: appwriteConfig.databasesID!,
@@ -127,7 +138,17 @@ const uploadAndUpdate = async (userId: string, userName: string, uri: string, fi
                 [fieldName]: uploaded.$id
             }
         });
-
+        if (oldFileID) {
+            try {
+                await storage.deleteFile({
+                    bucketId: appwriteConfig.userMediaBucketID!,
+                    fileId: oldFileID
+                });
+            } catch (deleteError) {
+                // Non-blocking: log but don’t crash
+                console.warn(`Failed to delete old ${fieldName}`, deleteError);
+            }
+        }
         return parseProfile(updateDoc, userName)
     } catch (error) {
         console.error('Error while uploadAndUpdate', error)

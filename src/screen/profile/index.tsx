@@ -5,9 +5,9 @@ import { useAuth } from "@/src/context/AuthContext"
 import { Entypo, Feather } from "@expo/vector-icons"
 import { Image } from "expo-image"
 import { useState } from "react"
-import { ActivityIndicator, Alert, Button, TouchableOpacity, View } from "react-native"
+import { ActivityIndicator, Alert, TouchableOpacity, View } from "react-native"
 import Animated, { Extrapolation, interpolate, useAnimatedScrollHandler, useAnimatedStyle, useSharedValue } from "react-native-reanimated"
-import { StyleSheet } from "react-native-unistyles"
+import { StyleSheet, useUnistyles } from "react-native-unistyles"
 import * as ImagePicker from 'expo-image-picker';
 import { userServices } from "@/src/services/userServices"
 
@@ -17,8 +17,9 @@ const PROFILE_IMAGE_SIZE = 100;
 const SCROLLABLE_RANGE = EXPANDED_HEIGHT - COLLAPSED_HEIGHT
 
 export const Profile = () => {
-    const [isUploading, setIsUploading] = useState<boolean>(false)
+    const [isUploading, setIsUploading] = useState<'avatar' | 'cover' | null>(null)
     const { user, userProfile, refreshProfile } = useAuth()
+    const {theme}= useUnistyles()
     const scrollY = useSharedValue(0);
     const onScroll = useAnimatedScrollHandler({
         onScroll: (event) => {
@@ -62,7 +63,7 @@ export const Profile = () => {
     // pick an image function for cover and avatar upload and update
     const handleImageUpdate = async (type: 'avatar' | 'cover') => {
         const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-        if (!permissionResult) {
+        if (!permissionResult.granted) {
             Alert.alert('Permission required', 'Permission to access the media library is required.');
             return;
         }
@@ -72,9 +73,8 @@ export const Profile = () => {
             aspect: type === 'avatar' ? [1, 1] : [16, 9],
             quality: 1
         });
-
         if (!result.canceled) {
-            setIsUploading(true)
+            setIsUploading(type)
             try {
                 const localUri = result.assets[0].uri;
                 if (type === 'avatar') {
@@ -87,15 +87,11 @@ export const Profile = () => {
                 Alert.alert("Error", "Fails to Update image. Please try again.")
                 console.error(error)
             } finally {
-                setIsUploading(false)
+                setIsUploading(null)
             }
         }
     }
 
-    const { logout } = useAuth()
-    const handleLogout = async () => {
-        await logout()
-    }
     if (!userProfile) {
         return (
             <View style={styles.loader}>
@@ -106,13 +102,19 @@ export const Profile = () => {
     return (
         <SafeAreaView>
             <Animated.View pointerEvents={"box-none"} style={[styles.header, headerStyle]}>
-                <Image style={styles.backgroundImage} source={{ uri: userProfile.coverUrl as string }} contentFit="cover" />
+                <Image style={styles.backgroundImage} source={{ uri: userProfile?.coverUrl as string }} contentFit="cover" />
                 <View style={styles.headerBorder} />
             </Animated.View>
             <Animated.View style={[styles.profileCotainer, profileStyle]}>
-                <Image style={[styles.profileImage]} source={{ uri: userProfile.avatarUrl as string }} />
-                <TouchableOpacity style={styles.profileIconContainer} disabled={isUploading} onPress={() => handleImageUpdate('avatar')}>
-                    <ThemeIcons IconsName={Entypo} name={"edit"} style={styles.icon} size={30} />
+                <Image style={[styles.profileImage]} source={{ uri: userProfile?.avatarUrl as string }} />
+                <TouchableOpacity style={styles.profileIconContainer}  onPress={() => handleImageUpdate('avatar')}>
+
+                    {
+                        isUploading === 'avatar' ?
+                            <ActivityIndicator size="large" color={theme.colors.elements.hydro} />
+                            :
+                            <ThemeIcons IconsName={Entypo} name={"edit"} style={styles.icon} size={30} />
+                    }
                 </TouchableOpacity>
             </Animated.View>
             <Animated.ScrollView
@@ -130,12 +132,16 @@ export const Profile = () => {
                 pointerEvents="box-none"
             >
                 <TouchableOpacity
-                    disabled={isUploading}
                     onPress={() => handleImageUpdate('cover')}
                     style={styles.headerEditIcon}
                     activeOpacity={0.7}
                 >
-                    <ThemeIcons IconsName={Feather} name={"edit"} style={styles.icon}  size={30} />
+                    {
+                        isUploading === 'cover' ?
+                            <ActivityIndicator color={theme.colors.elements.hydro} size="large"  />
+                            :
+                            <ThemeIcons IconsName={Feather} name={"edit"} style={styles.icon} size={30} />
+                    }
                 </TouchableOpacity>
             </Animated.View>
         </SafeAreaView>
@@ -149,9 +155,8 @@ const styles = StyleSheet.create((theme) => ({
         left: 0,
         right: 0,
         zIndex: 20,
-        overflow: 'hidden',
     },
-    headerBorder:{
+    headerBorder: {
         position: 'absolute',
         bottom: 0,
         left: 0,
@@ -159,7 +164,7 @@ const styles = StyleSheet.create((theme) => ({
         height: 2,
         backgroundColor: '#eee',
         zIndex: 5,
-        marginHorizontal:16
+        marginHorizontal: 16
     },
     headerEditIcon: {
         position: 'absolute',
@@ -167,8 +172,8 @@ const styles = StyleSheet.create((theme) => ({
         right: 10,
         padding: 8,
         zIndex: 101,
-        borderRadius:40,
-        alignSelf:'center'
+        borderRadius: 40,
+        alignSelf: 'center'
     },
     backgroundImage: {
         width: '100%',
@@ -188,10 +193,10 @@ const styles = StyleSheet.create((theme) => ({
         right: 25,
     },
     icon: {
-        color: theme.colors.rarity.fourStar,
+        color: theme.colors.elements.hydro,
         backgroundColor: 'rgba(0,0,0,0.3)',
-        padding:8,
-        borderRadius:40
+        padding: 8,
+        borderRadius: 40
     },
     profileImage: {
         width: PROFILE_IMAGE_SIZE,
