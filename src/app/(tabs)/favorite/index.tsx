@@ -1,5 +1,5 @@
 import { Favorites } from "@/src/screen/favorites";
 
-export default function FavoritesScreen() {
+export default function FavoritesScreen (){
     return <Favorites />
 }

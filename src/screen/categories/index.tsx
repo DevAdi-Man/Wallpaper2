@@ -55,7 +55,7 @@ export const Categories = () => {
                         <CategorySection
                             onPress={() => {
                                 router.push({
-                                    pathname: '/category/[id]',
+                                    pathname: '/(tabs)/category/[id]',
                                     params: {
                                         id: item.id,
                                         name: item.groupName

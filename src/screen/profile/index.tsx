@@ -2,14 +2,17 @@ import SafeAreaView from "@/src/components/safeAreaView"
 import { ThemeIcons } from "@/src/components/themeIcons"
 import { ThemeText } from "@/src/components/themeText"
 import { useAuth } from "@/src/context/AuthContext"
-import { Entypo, Feather } from "@expo/vector-icons"
+import {  Entypo, Feather } from "@expo/vector-icons"
 import { Image } from "expo-image"
 import { useState } from "react"
-import { ActivityIndicator, Alert, TouchableOpacity, View } from "react-native"
+import { ActivityIndicator, Alert,  TouchableOpacity, View } from "react-native"
 import Animated, { Extrapolation, interpolate, useAnimatedScrollHandler, useAnimatedStyle, useSharedValue } from "react-native-reanimated"
 import { StyleSheet, useUnistyles } from "react-native-unistyles"
 import * as ImagePicker from 'expo-image-picker';
 import { userServices } from "@/src/services/userServices"
+import { ChangeButton } from "./component/changeButton"
+import { Space } from "@/src/components/space"
+import { LogOut } from "./component/logout"
 
 const EXPANDED_HEIGHT = 350;
 const COLLAPSED_HEIGHT = 100;
@@ -125,6 +128,11 @@ export const Profile = () => {
             >
                 <View style={styles.content}>
                     <ThemeText variant="title" style={styles.nameText}>{user?.name}</ThemeText>
+                    <ChangeButton title="Update Email" onPress={()=> console.log("update Email pressed")} />
+                    <Space height={8} />
+                    <ChangeButton title="Change Password" onPress={()=> console.log("Change password pressed")} />
+                    <Space height={8}/>
+                    <LogOut />
                 </View>
             </Animated.ScrollView>
             <Animated.View
@@ -148,7 +156,7 @@ export const Profile = () => {
     )
 }
 
-const styles = StyleSheet.create((theme) => ({
+const styles = StyleSheet.create((theme,rt) => ({
     header: {
         position: 'absolute',
         top: 0,
