@@ -8,17 +8,17 @@ import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 
 export const TabBarConfig = [
     {
-        name: 'index',
+        name: 'home',
         iconsFamilyName: Octicons,
         iconName: 'home-fill'
     },
     {
-        name: 'categories',
+        name: 'category',
         iconsFamilyName: MaterialIcons,
         iconName: 'category'
     },
     {
-        name: 'favorites',
+        name: 'favorite',
         iconsFamilyName: MaterialIcons,
         iconName: 'favorite'
     },
@@ -33,19 +33,18 @@ export const CustomeTabBar: React.FC<BottomTabBarProps> = ({state,navigation}) =
     const { theme } = useUnistyles();
     const router = useRouter();
     const pathname = usePathname();
-
     return (
         <SafeAreaView edges={['bottom']} style={[styles.safe, { backgroundColor: theme.colors.tabBarBackground }]}>
             {
-                TabBarConfig.map((tab) => {
-                    const isFocused = pathname === `/${tab.name}` || (pathname === '/' && tab.name === 'index');
+                TabBarConfig.map((tab, index) => {
+                    const isFocused = state.index === index;
                     const activeIconColor = isFocused ? theme.colors.tabBarActive : theme.colors.tabBarInactive;
 
                     return (
                         <Pressable
                             style={[styles.container]}
                             key={tab.name}
-                            onPress={() => router.push(tab.name === 'index' ? '/' : `/${tab.name}` as any)}
+                            onPress={() => router.push(`/(tabs)/${tab.name}` as any)}
                         >
                             <ThemeIcons IconsName={tab.iconsFamilyName} name={tab.iconName} size={24} color={activeIconColor} />
                         </Pressable>

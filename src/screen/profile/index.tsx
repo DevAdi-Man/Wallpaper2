@@ -2,7 +2,7 @@ import SafeAreaView from "@/src/components/safeAreaView"
 import { ThemeIcons } from "@/src/components/themeIcons"
 import { ThemeText } from "@/src/components/themeText"
 import { useAuth } from "@/src/context/AuthContext"
-import {  Entypo, Feather } from "@expo/vector-icons"
+import {  Entypo, Feather, FontAwesome } from "@expo/vector-icons"
 import { Image } from "expo-image"
 import { useState } from "react"
 import { ActivityIndicator, Alert,  TouchableOpacity, View } from "react-native"
@@ -148,7 +148,7 @@ export const Profile = () => {
                         isUploading === 'cover' ?
                             <ActivityIndicator color={theme.colors.elements.hydro} size="large"  />
                             :
-                            <ThemeIcons IconsName={Feather} name={"edit"} style={styles.icon} size={30} />
+                            <ThemeIcons IconsName={FontAwesome} name={"camera"} style={styles.icon} size={30} />
                     }
                 </TouchableOpacity>
             </Animated.View>
@@ -197,8 +197,8 @@ const styles = StyleSheet.create((theme,rt) => ({
     },
     profileIconContainer: {
         position: 'relative',
-        bottom: 30,
-        right: 25,
+        bottom: 35,
+        left: 35,
     },
     icon: {
         color: theme.colors.elements.hydro,

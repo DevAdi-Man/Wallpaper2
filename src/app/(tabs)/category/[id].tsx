@@ -47,7 +47,7 @@ export default function CategoryParentScreen() {
                 </Pressable>
                 <ThemeText variant="title" style={styles.title}>{name}</ThemeText>
             </View>
-            <Space height={8}/>
+            <Space height={8} />
             <FlashList
                 data={subCategory}
                 numColumns={3}
@@ -78,11 +78,11 @@ export default function CategoryParentScreen() {
 const styles = StyleSheet.create((theme) => ({
     headerContainer: {
         flexDirection: 'row',
-        justifyContent:'space-between',
+        justifyContent: 'space-between',
         alignItems: 'center',
         paddingHorizontal: 16,
         paddingVertical: 12,
-        gap:24
+        gap: 24
     },
     backButton: {
         padding: 4,

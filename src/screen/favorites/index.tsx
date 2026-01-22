@@ -12,7 +12,6 @@ import { WallpaperProps } from "@/src/services/wallpaperService"
 export const Favorites = () => {
     const route = useRouter()
     const Favorites = useFavourites((state) => state.favorites)
-    const {fetchFavorites} = useFavourites()
     const openWallpaperRoute = useCallback((item: WallpaperProps) => {
         route.push({
             pathname: '/wallpaper/[id]',

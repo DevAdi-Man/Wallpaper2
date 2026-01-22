@@ -71,7 +71,9 @@
       "autolinkingModuleResolution":true
     },
     "extra": {
-      "router": {},
+      "router": {
+            "root": "./src/app"
+      },
       "eas": {
         "projectId": "6c489d92-a70c-4b5f-aabf-143fb6676820"
       }

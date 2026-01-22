@@ -18,7 +18,8 @@ export default function SafeAreaView({ children, style, ...props }: SafeAreaView
                 style,
                 {
                     paddingTop: inset.top,
-                    paddingHorizontal: 8
+                    paddingHorizontal: 8,
+                    paddingBottom:inset.bottom
                 }
             ]}>
             {children}
