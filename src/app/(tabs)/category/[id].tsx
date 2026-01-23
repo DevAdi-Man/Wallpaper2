@@ -6,7 +6,7 @@ import { CategoryItem, getSubcategoriesByParent } from "@/src/services/categoryS
 import { AntDesign } from "@expo/vector-icons";
 import { FlashList } from "@shopify/flash-list";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState, } from "react";
 import { ActivityIndicator, Image, Pressable, View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 
@@ -32,6 +32,28 @@ export default function CategoryParentScreen() {
             setIsLoading(false)
         }
     }
+    const renderItem = useCallback(({ item }: { item: CategoryItem }) => (
+        <Pressable
+            onPress={() => {
+                router.push({
+                    pathname: '/collection/[id]',
+                    params: { id: item.id, name: item.name }
+                })
+            }}
+            style={styles.cardContainer}
+        >
+            <View style={styles.imageWrapper}>
+                <Image
+                    source={{ uri: item.thumbnail }}
+                    style={styles.image}
+                    resizeMode="cover"
+                />
+            </View>
+            <ThemeText variant="caption" style={styles.caption}>{item.name}</ThemeText>
+        </Pressable>
+    ), [router]);
+    const keyExtractor = useCallback((item: CategoryItem) => item.id.toString(), []);
+
     if (isLoading) {
         return (
             <View style={styles.loader}>
@@ -52,25 +74,8 @@ export default function CategoryParentScreen() {
                 data={subCategory}
                 numColumns={3}
                 contentContainerStyle={styles.listContent}
-                renderItem={({ item }) => (
-                    <Pressable
-                        onPress={() => {
-                            router.push({
-                                pathname: '/collection/[id]',
-                                params: { id: item.id, name: item.name }
-                            })
-                        }}
-                        style={styles.cardContainer}
-                    >
-                        <View style={styles.imageWrapper}>
-                            <Image
-                                source={{ uri: item.thumbnail }}
-                                style={styles.image}
-                            />
-                        </View>
-                        <ThemeText variant="caption" style={styles.caption}>{item.name}</ThemeText>
-                    </Pressable>
-                )}
+                keyExtractor={keyExtractor}
+                renderItem={renderItem}
             />
         </SafeAreaView>
     )

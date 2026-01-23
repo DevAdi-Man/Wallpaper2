@@ -1,19 +1,10 @@
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import { Dimensions, View } from "react-native"
 import { StyleSheet } from "react-native-unistyles"
 import Animated, { Extrapolation, interpolate, useAnimatedScrollHandler, useAnimatedStyle, useDerivedValue, useSharedValue } from 'react-native-reanimated';
 import { Space } from "@/src/components/space";
+import { BannerProps, getBanners } from "@/src/services/bannerServices";
 
-const Data = [
-    require('@/assets/images/abstract1.jpg'),
-    require('@/assets/images/nature.jpg'),
-    require('@/assets/images/space1.jpg'),
-    require('@/assets/images/alien.jpg'),
-    require('@/assets/images/nature2.jpg'),
-    require('@/assets/images/space2.jpg'),
-    require('@/assets/images/jon.jpg'),
-    require('@/assets/images/space6.jpg'),
-]
 const { width: WIDTH } = Dimensions.get('window')
 const CARD_WIDTH = WIDTH * 0.78
 const SPACING = 16
@@ -52,7 +43,7 @@ const CarouselItem = ({ item, index, scrollX }: { item: any, index: number, scro
     return (
         <Animated.View style={{ width: ITEM_SIZE, alignItems: 'center', justifyContent: 'center' }}>
             <Animated.Image
-                source={item}
+                source={{uri:item.imageSource}}
                 style={[{ width: CARD_WIDTH, height: 180, marginHorizontal: SPACING / 2, borderRadius: 20, resizeMode: 'cover' }, rStyle]}
             />
         </Animated.View>
@@ -61,7 +52,7 @@ const CarouselItem = ({ item, index, scrollX }: { item: any, index: number, scro
 
 export const BannerCarousel = () => {
     const scrollRef = useRef<Animated.ScrollView>(null);
-
+    const [banner, setBanner] = useState<BannerProps[]>([]);
     const scrollX = useSharedValue(0);
     const progress = useDerivedValue(() => scrollX.value / ITEM_SIZE)
 
@@ -70,14 +61,20 @@ export const BannerCarousel = () => {
             scrollX.value = e.contentOffset.x
         }
     });
-
+    useEffect(() => {
+        const load = async () => {
+            const banners = await getBanners();
+            setBanner(banners)
+        }
+        load();
+    }, [])
     useEffect(() => {
         const interval = setInterval(() => {
-            if (!scrollRef.current) return;
+            if (!scrollRef.current || banner.length === 0) return;
 
             const currentIndex = Math.round(scrollX.value / ITEM_SIZE);
 
-            const nextIndex = currentIndex + 1 >= Data.length ? 0 : currentIndex + 1;
+            const nextIndex = currentIndex + 1 >= banner.length ? 0 : currentIndex + 1;
 
             scrollRef.current.scrollTo({
                 x: nextIndex * ITEM_SIZE,
@@ -110,7 +107,7 @@ export const BannerCarousel = () => {
                 }}
             >
                 {
-                    Data.map((item, index) => {
+                    banner.map((item, index) => {
 
                         return (
                             <CarouselItem
@@ -126,7 +123,7 @@ export const BannerCarousel = () => {
             <Space height={8} />
             {/* Pagination */}
             <View style={styles.dots}>
-                {Data.map((_, i) => {
+                {banner.map((_, i) => {
                     return <Dots key={i} i={i} progress={progress} />
                 })}
             </View>

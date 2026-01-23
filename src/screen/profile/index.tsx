@@ -34,18 +34,20 @@ export const Profile = () => {
         []
     )
     const headerStyle = useAnimatedStyle(() => {
+        'worklet';
         const height = interpolate(
             scrollY.value,
-            [-100, 0, SCROLLABLE_RANGE],
-            [EXPANDED_HEIGHT + 100, EXPANDED_HEIGHT, COLLAPSED_HEIGHT],
+            [0, SCROLLABLE_RANGE],
+            [EXPANDED_HEIGHT, COLLAPSED_HEIGHT],
             Extrapolation.CLAMP
         )
         return {
             height
         }
-    }, [])
+    })
 
     const profileStyle = useAnimatedStyle(() => {
+        'worklet';
         const startTop = EXPANDED_HEIGHT - (PROFILE_IMAGE_SIZE / 2);
         const endTop = (COLLAPSED_HEIGHT / 2) - (PROFILE_IMAGE_SIZE / 2) + 40;
 
@@ -58,14 +60,14 @@ export const Profile = () => {
         const scale = interpolate(
             scrollY.value,
             [0, SCROLLABLE_RANGE],
-            [1, 0.6],
+            [1, 0.7],
             Extrapolation.CLAMP
         )
         return {
             top,
             transform: [{ scale }]
         }
-    }, [])
+    })
 
     // pick an image function for cover and avatar upload and update
     const handleImageUpdate = async (type: 'avatar' | 'cover') => {
