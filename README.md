@@ -1,50 +1,87 @@
-# Welcome to your Expo app 👋
+# Pixory - Wallpaper Application
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Pixory is a sleek and modern mobile wallpaper application built with React Native and Expo. It allows users to browse, save, and set high-quality wallpapers, all powered by an Appwrite backend.
 
-## Get started
+## ✨ Features
 
-1. Install dependencies
+- **Dynamic Theming:** Seamlessly switch between light and dark modes.
+- **User Authentication:** Secure sign-up, login, and email verification.
+- **Wallpaper Browsing:** Explore a vast collection of wallpapers.
+- **Categorization:** Wallpapers organized into categories for easy discovery.
+- **Favorites System:** Save your favorite wallpapers to a personal collection.
+- **Set Wallpaper:** Apply wallpapers directly to your device's home screen or lock screen.
+- **Profile Management:** Users can update their email and change their password.
+- **Modern UI:** Built with a clean and intuitive user interface.
 
-   ```bash
-   npm install
-   ```
+## 🛠️ Tech Stack
 
-2. Start the app
+- **Frontend:**
+  - [React Native](https://reactnative.dev/)
+  - [Expo](https://expo.dev/) & Expo Router
+  - [TypeScript](https://www.typescriptlang.org/)
+- **Backend:**
+  - [Appwrite](https://appwrite.io/)
+- **Styling:**
+  - [Unistyles](https://react-native-unistyles.vercel.app/) for theming and responsive design.
+- **Forms:**
+  - [Formik](https://formik.org/) & [Yup](https://github.com/jquense/yup) for form handling and validation.
 
-   ```bash
-   npx expo start
-   ```
+## 🚀 Getting Started
 
-In the output, you'll find options to open the app in a
+Follow these instructions to get the project up and running on your local machine.
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+### Prerequisites
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+- Node.js (LTS version recommended)
+- npm or Yarn
+- An Appwrite instance (cloud or self-hosted)
 
-## Get a fresh project
-
-When you're ready, run:
+### 1. Clone the Repository
 
 ```bash
-npm run reset-project
+git clone https://github.com/YourUsername/Pixory.git
+cd Pixory
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+### 2. Install Dependencies
 
-## Learn more
+```bash
+npm install
+# or
+yarn install
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+### 3. Configure Environment Variables
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+This project requires a connection to an Appwrite backend. Create a `.env` file in the root of the project by copying the example below and filling in your Appwrite project details.
 
-## Join the community
+#### `.env.sample`
+```env
+EXPO_PUBLIC_APPWRITE_ENDPOINT=
+EXPO_PUBLIC_APPWRITE_PROJECT_ID=
+EXPO_PUBLIC_APPWRITE_PROJECT_NAME=
+EXPO_PUBLIC_APPWRITE_DATABASE_NAME=
+EXPO_PUBLIC_APPWRITE_DATABASE_ID=
+EXPO_PUBLIC_APPWRITE_WALLPAPER_COLLECTION_ID=
+EXPO_PUBLIC_APPWRITE_CATEGORIES_COLLECTION_ID=
+EXPO_PUBLIC_APPWRITE_SUBCATEGORIES_COLLECTION_ID=
+EXPO_PUBLIC_APPWRITE_FAVORITE_COLLECTION_ID=
+EXPO_PUBLIC_APPWRITE_USER_MEDIA_BUCKET_ID=
+EXPO_PUBLIC_APPWRITE_USER_COLLECTION_ID=
+EXPO_PUBLIC_APPWRITE_BANNER_BUCKET_ID=
+EXPO_PUBLIC_APPWRITE_BANNER_COLLECTION_ID=
+```
 
-Join our community of developers creating universal apps.
+**Note:** Since we have previously removed the `.env` file from the Git history, ensure your `.gitignore` file contains a line for `.env` to prevent accidentally committing your credentials.
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+### 4. Start the Application
+
+```bash
+npx expo start
+```
+
+This will open the Expo development server, allowing you to run the app on an Android emulator, iOS simulator, or on your physical device using the Expo Go app.
+
+---
+
+This README was generated with assistance from the Gemini CLI agent.
