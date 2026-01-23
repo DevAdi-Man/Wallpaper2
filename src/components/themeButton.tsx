@@ -1,9 +1,10 @@
+import React from 'react';
 import { Pressable, StyleProp, ViewStyle } from "react-native"
 import { ThemeText } from "./themeText"
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
 import { ThemeIcons, ThemeIconsProp } from "./themeIcons";
 type ButtonProp = {
-    content: string,
+    content: React.ReactNode,
     onPress?: () => void;
     style?: StyleProp<ViewStyle>;
     isIcon?: boolean
@@ -13,7 +14,11 @@ export const ThemeButton: React.FC<ButtonProp> = ({ IconsName, name, content, on
     const { theme } = useUnistyles()
     return (
         <Pressable style={[style, styles.container]} onPress={onPress}>
-            <ThemeText style={styles.text} variant="body">{content}</ThemeText>
+            {typeof content === 'string' ? (
+                <ThemeText style={styles.text} variant="body">{content}</ThemeText>
+            ) : (
+                content
+            )}
             {
                 isIcon && name && IconsName && (
                     <ThemeIcons
@@ -23,7 +28,8 @@ export const ThemeButton: React.FC<ButtonProp> = ({ IconsName, name, content, on
                         size={24}
                         color={theme.colors.secondary}
                     />
-                )}
+                )
+            }
         </Pressable>
     )
 }

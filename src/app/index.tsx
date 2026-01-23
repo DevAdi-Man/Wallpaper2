@@ -32,12 +32,12 @@ export default function WelcomeScreen() {
                 <View style={[styles.imageContainer, styles.row]}>
                     <Image
                         style={[styles.gridImage, styles.grid40]}
-                        source={require("../../assets/images/abstract7.jpg")}
+                        source={require("../../assets/images/welcome3.jpg")}
                     />
                     <Space width={16} />
                     <Image
                         style={[styles.gridImage, styles.grid55]}
-                        source={require("../../assets/images/abstract3.jpg")}
+                        source={require("../../assets/images/welcome4.jpg")}
                     />
                 </View>
 

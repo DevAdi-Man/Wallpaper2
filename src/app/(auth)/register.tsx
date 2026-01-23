@@ -46,7 +46,7 @@ export default function RegisterScreen() {
     return (
         <View style={styles.container}>
             <Image
-                source={require('@/assets/images/space7.jpg')}
+                source={require('@/assets/images/welcome4.jpg')}
                 style={styles.backgroundImage}
                 contentFit="cover"
             />
@@ -131,11 +131,10 @@ export default function RegisterScreen() {
 
                                         <Space height={32} />
 
-                                        <ThemeButton 
+                                        <ThemeButton
                                             content={loading ? <ActivityIndicator color="#fff" /> : "Create Account"}
                                             isIcon={false}
                                             onPress={handleSubmit}
-                                            disabled={loading}
                                         />
 
                                         <Space height={24} />

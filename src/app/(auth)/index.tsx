@@ -43,7 +43,7 @@ export default function LoginScreen() {
     return (
         <View style={styles.container}>
             <Image
-                source={require('@/assets/images/abstract7.jpg')}
+                source={require('@/assets/images/welcome2.jpg')}
                 style={styles.backgroundImage}
                 contentFit="cover"
             />
@@ -111,11 +111,10 @@ export default function LoginScreen() {
 
                                         <Space height={32} />
 
-                                        <ThemeButton 
+                                        <ThemeButton
                                             content={loading ? <ActivityIndicator color="#fff" /> : "Sign In"}
                                             isIcon={false}
                                             onPress={handleSubmit}
-                                            disabled={loading}
                                         />
 
                                         <Space height={24} />

@@ -11,7 +11,6 @@ import { StyleSheet, useUnistyles } from "react-native-unistyles"
 import * as ImagePicker from 'expo-image-picker';
 import { userServices } from "@/src/services/userServices"
 import { ChangeButton } from "./component/changeButton"
-import { Space } from "@/src/components/space"
 import { LogOut } from "./component/logout"
 import { useRouter } from "expo-router"
 import { EmailVerificationCard } from "./component/emailVerificationCard"
