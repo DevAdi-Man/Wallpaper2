@@ -3,6 +3,7 @@ import { ID, Models } from 'react-native-appwrite';
 import { account } from '../lib/appwrite';
 import { userServices } from '../services/userServices';
 import { useFavourites } from '../screen/favorites/store/favourites';
+import { sendEmailVerification, verifyEmail } from '../services/authService';
 
 interface AuthContextType {
     user: Models.User<Models.Preferences> | null;
@@ -12,10 +13,12 @@ interface AuthContextType {
     logout: () => Promise<void>;
     createAccount: (email: string, password: string, name: string) => Promise<void>;
     refreshProfile: () => Promise<void>;
+    sendVerificationEmail: (redirectUrl: string) => Promise<void>;
+    confirmEmailVerification: (userId: string, secret: string) => Promise<void>;
 }
 interface UserProfile {
-    avatarUrl: string | null;
-    coverUrl: string | null;
+    avatarUrl?: string | URL;
+    coverUrl?: string | URL;
     accountId: string;
     name: string,
     email: string,
@@ -104,7 +107,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             });
             await login(email, password)
             await userServices.createProfileDocument(newAccount.$id);
-
             await refreshProfile()
         } catch (e) {
             console.error("Registration error:", e)
@@ -114,8 +116,38 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         }
     };
 
+    const sendVerificationEmail = async (redirectUrl: string) => {
+        try {
+            console.log("url:",redirectUrl)
+            await sendEmailVerification(redirectUrl);
+        } catch (error) {
+            console.error("Failed to send verification email:", error);
+            throw error;
+        }
+    };
+
+    const confirmEmailVerification = async (userId: string, secret: string) => {
+        try {
+            await verifyEmail(userId, secret);
+            await checkAuth(); // Refresh user data
+        } catch (error) {
+            console.error("Failed to verify email:", error);
+            throw error;
+        }
+    };
+
     return (
-        <AuthContext.Provider value={{ userProfile, refreshProfile, user, isLoading, login, logout, createAccount }}>
+        <AuthContext.Provider value={{
+            userProfile,
+            refreshProfile,
+            user,
+            isLoading,
+            login,
+            logout,
+            createAccount,
+            sendVerificationEmail,
+            confirmEmailVerification
+        }}>
             {children}
         </AuthContext.Provider>
     );

@@ -7,36 +7,44 @@ type ButtonProp = {
     onPress?: () => void;
     style?: StyleProp<ViewStyle>;
     isIcon?: boolean
-} & ThemeIconsProp
+} & Partial<ThemeIconsProp>
 
 export const ThemeButton: React.FC<ButtonProp> = ({ IconsName, name, content, onPress, style, isIcon = false }) => {
-    const {theme} = useUnistyles()
+    const { theme } = useUnistyles()
     return (
         <Pressable style={[style, styles.container]} onPress={onPress}>
             <ThemeText style={styles.text} variant="body">{content}</ThemeText>
             {
-                isIcon && (<ThemeIcons name={name} IconsName={IconsName} style={styles.icon} size={24} color={theme.colors.secondary} />)
-            }
+                isIcon && name && IconsName && (
+                    <ThemeIcons
+                        name={name}
+                        IconsName={IconsName}
+                        style={styles.icon}
+                        size={24}
+                        color={theme.colors.secondary}
+                    />
+                )}
         </Pressable>
     )
 }
 
 const styles = StyleSheet.create((theme) => ({
     container: {
+        width: '100%',
         backgroundColor: theme.colors.primary,
         paddingVertical: 16,
         paddingHorizontal: 24,
         borderRadius: 100,
         alignItems: 'center',
         justifyContent: 'center',
-        flexDirection:'row'
+        flexDirection: 'row'
     },
     text: {
         color: theme.colors.background,
         fontWeight: '600',
         fontSize: 16
     },
-    icon:{
-        paddingLeft:16
+    icon: {
+        paddingLeft: 16
     }
 }))

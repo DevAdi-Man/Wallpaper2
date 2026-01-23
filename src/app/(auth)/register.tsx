@@ -2,33 +2,40 @@ import { TextInput, View, Pressable, Alert, ActivityIndicator, KeyboardAvoidingV
 import { useRouter, Link } from 'expo-router';
 import { useState } from 'react';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
-import { LinearGradient } from 'expo-linear-gradient';
 import { Feather } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import SafeAreaView from '@/src/components/safeAreaView';
 import { ThemeText } from '@/src/components/themeText';
 import { Space } from '@/src/components/space';
+import { ThemeButton } from '@/src/components/themeButton';
 import { useAuth } from '@/src/context/AuthContext';
+import { Formik } from 'formik';
+import * as Yup from 'yup';
+
+const validationSchema = Yup.object().shape({
+    name: Yup.string()
+        .min(2, 'Name must be at least 2 characters')
+        .required('Name is required'),
+    email: Yup.string()
+        .email('Invalid email format')
+        .required('Email is required'),
+    password: Yup.string()
+        .min(6, 'Password must be at least 6 characters')
+        .required('Password is required')
+});
 
 export default function RegisterScreen() {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [name, setName] = useState('');
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const { createAccount } = useAuth();
     const router = useRouter();
     const { theme } = useUnistyles();
 
-    const handleCreateAccount = async () => {
-        if (!name || !email || !password) {
-            Alert.alert("Error", "Please fill in all fields");
-            return;
-        }
+    const handleCreateAccount = async (values: { name: string; email: string; password: string }) => {
         setLoading(true);
         try {
-            await createAccount(email, password, name);
-            router.replace('/(tabs)');
+            await createAccount(values.email, values.password, values.name);
+            router.replace('/(tabs)/home');
         } catch (error: any) {
             Alert.alert("Registration Failed", error.message);
         } finally {
@@ -60,76 +67,90 @@ export default function RegisterScreen() {
 
                             <Space height={48} />
 
-                            <View style={styles.form}>
-                                <View style={styles.inputContainer}>
-                                    <Feather name="user" size={20} color={theme.colors.typographySecondary} style={styles.icon} />
-                                    <TextInput
-                                        placeholder="Name"
-                                        placeholderTextColor={theme.colors.typographySecondary}
-                                        value={name}
-                                        onChangeText={setName}
-                                        style={styles.input}
-                                    />
-                                </View>
-
-                                <Space height={16} />
-
-                                <View style={styles.inputContainer}>
-                                    <Feather name="mail" size={20} color={theme.colors.typographySecondary} style={styles.icon} />
-                                    <TextInput
-                                        placeholder="Email"
-                                        placeholderTextColor={theme.colors.typographySecondary}
-                                        value={email}
-                                        onChangeText={setEmail}
-                                        style={styles.input}
-                                        autoCapitalize="none"
-                                        keyboardType="email-address"
-                                    />
-                                </View>
-
-                                <Space height={16} />
-
-                                <View style={styles.inputContainer}>
-                                    <Feather name="lock" size={20} color={theme.colors.typographySecondary} style={styles.icon} />
-                                    <TextInput
-                                        placeholder="Password"
-                                        placeholderTextColor={theme.colors.typographySecondary}
-                                        value={password}
-                                        onChangeText={setPassword}
-                                        secureTextEntry={!showPassword}
-                                        style={styles.input}
-                                    />
-                                    <Pressable onPress={() => setShowPassword(!showPassword)} style={styles.eyeIcon}>
-                                        <Feather name={showPassword ? "eye" : "eye-off"} size={20} color={theme.colors.typographySecondary} />
-                                    </Pressable>
-                                </View>
-
-                                <Space height={32} />
-
-                                <Pressable onPress={handleCreateAccount} disabled={loading}>
-                                    <LinearGradient
-                                        colors={[theme.colors.primary, theme.colors.primary]}
-                                        style={styles.button}
-                                    >
-                                        {loading ? (
-                                            <ActivityIndicator color="#fff" />
-                                        ) : (
-                                            <ThemeText variant="body" style={styles.buttonText}>Create Account</ThemeText>
+                            <Formik
+                                initialValues={{ name: '', email: '', password: '' }}
+                                validationSchema={validationSchema}
+                                onSubmit={handleCreateAccount}
+                            >
+                                {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
+                                    <View style={styles.form}>
+                                        <View style={styles.inputContainer}>
+                                            <Feather name="user" size={20} color={theme.colors.typographySecondary} style={styles.icon} />
+                                            <TextInput
+                                                placeholder="Name"
+                                                placeholderTextColor={theme.colors.typographySecondary}
+                                                value={values.name}
+                                                onChangeText={handleChange('name')}
+                                                onBlur={handleBlur('name')}
+                                                style={styles.input}
+                                            />
+                                        </View>
+                                        {touched.name && errors.name && (
+                                            <ThemeText variant="caption" style={styles.errorText}>{errors.name}</ThemeText>
                                         )}
-                                    </LinearGradient>
-                                </Pressable>
 
-                                <Space height={24} />
+                                        <Space height={16} />
 
-                                <View style={styles.footer}>
-                                    <ThemeText variant="body" style={styles.footerText}>Already have an account? </ThemeText>
-                                    <Link href="/(auth)" asChild>
-                                        <Pressable>
-                                            <ThemeText variant="body" style={styles.link}>Sign In</ThemeText>
-                                        </Pressable>
-                                    </Link>
-                                </View>
-                            </View>
+                                        <View style={styles.inputContainer}>
+                                            <Feather name="mail" size={20} color={theme.colors.typographySecondary} style={styles.icon} />
+                                            <TextInput
+                                               placeholder="Email"
+                                                placeholderTextColor={theme.colors.typographySecondary}
+                                                value={values.email}
+                                                onChangeText={handleChange('email')}
+                                                onBlur={handleBlur('email')}
+                                                style={styles.input}
+                                                autoCapitalize="none"
+                                                keyboardType="email-address"
+                                            />
+                                        </View>
+                                        {touched.email && errors.email && (
+                                            <ThemeText variant="caption" style={styles.errorText}>{errors.email}</ThemeText>
+                                        )}
+
+                                        <Space height={16} />
+
+                                        <View style={styles.inputContainer}>
+                                            <Feather name="lock" size={20} color={theme.colors.typographySecondary} style={styles.icon} />
+                                            <TextInput
+                                                placeholder="Password"
+                                                placeholderTextColor={theme.colors.typographySecondary}
+                                                value={values.password}
+                                                onChangeText={handleChange('password')}
+                                                onBlur={handleBlur('password')}
+                                                secureTextEntry={!showPassword}
+                                                style={styles.input}
+                                            />
+                                            <Pressable onPress={() => setShowPassword(!showPassword)} style={styles.eyeIcon}>
+                                                <Feather name={showPassword ? "eye" : "eye-off"} size={20} color={theme.colors.typographySecondary} />
+                                            </Pressable>
+                                        </View>
+                                        {touched.password && errors.password && (
+                                            <ThemeText variant="caption" style={styles.errorText}>{errors.password}</ThemeText>
+                                        )}
+
+                                        <Space height={32} />
+
+                                        <ThemeButton 
+                                            content={loading ? <ActivityIndicator color="#fff" /> : "Create Account"}
+                                            isIcon={false}
+                                            onPress={handleSubmit}
+                                            disabled={loading}
+                                        />
+
+                                        <Space height={24} />
+
+                                        <View style={styles.footer}>
+                                            <ThemeText variant="body" style={styles.footerText}>Already have an account? </ThemeText>
+                                            <Link href="/(auth)" asChild>
+                                                <Pressable>
+                                                    <ThemeText variant="body" style={styles.link}>Sign In</ThemeText>
+                                                </Pressable>
+                                            </Link>
+                                        </View>
+                                    </View>
+                                )}
+                            </Formik>
                         </View>
                     </TouchableWithoutFeedback>
                 </KeyboardAvoidingView>
@@ -194,16 +215,6 @@ const styles = StyleSheet.create((theme) => ({
     eyeIcon: {
         padding: 8,
     },
-    button: {
-        paddingVertical: 16,
-        borderRadius: 16,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    buttonText: {
-        color: '#fff',
-        fontWeight: '600',
-    },
     footer: {
         flexDirection: 'row',
         justifyContent: 'center',
@@ -215,5 +226,11 @@ const styles = StyleSheet.create((theme) => ({
     link: {
         color: theme.colors.primary,
         fontWeight: '600',
+    },
+    errorText: {
+        color: '#ff4444',
+        fontSize: 12,
+        paddingLeft: 16,
+        paddingTop: 4,
     },
 }));

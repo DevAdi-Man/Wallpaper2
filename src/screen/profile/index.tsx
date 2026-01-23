@@ -2,17 +2,19 @@ import SafeAreaView from "@/src/components/safeAreaView"
 import { ThemeIcons } from "@/src/components/themeIcons"
 import { ThemeText } from "@/src/components/themeText"
 import { useAuth } from "@/src/context/AuthContext"
-import {  Entypo, Feather, FontAwesome } from "@expo/vector-icons"
+import {  Entypo,  FontAwesome } from "@expo/vector-icons"
 import { Image } from "expo-image"
 import { useState } from "react"
 import { ActivityIndicator, Alert,  TouchableOpacity, View } from "react-native"
-import Animated, { Extrapolation, interpolate, useAnimatedScrollHandler, useAnimatedStyle, useSharedValue } from "react-native-reanimated"
+import Animated, { Extrapolation, interpolate, useAnimatedScrollHandler, useAnimatedStyle, useSharedValue, withSpring, runOnJS } from "react-native-reanimated"
 import { StyleSheet, useUnistyles } from "react-native-unistyles"
 import * as ImagePicker from 'expo-image-picker';
 import { userServices } from "@/src/services/userServices"
 import { ChangeButton } from "./component/changeButton"
 import { Space } from "@/src/components/space"
 import { LogOut } from "./component/logout"
+import { useRouter } from "expo-router"
+import { EmailVerificationCard } from "./component/emailVerificationCard"
 
 const EXPANDED_HEIGHT = 350;
 const COLLAPSED_HEIGHT = 100;
@@ -23,12 +25,14 @@ export const Profile = () => {
     const [isUploading, setIsUploading] = useState<'avatar' | 'cover' | null>(null)
     const { user, userProfile, refreshProfile } = useAuth()
     const {theme}= useUnistyles()
+    const router = useRouter()
     const scrollY = useSharedValue(0);
-    const onScroll = useAnimatedScrollHandler({
-        onScroll: (event) => {
+    const onScroll = useAnimatedScrollHandler(
+        (event) => {
             scrollY.value = event.contentOffset.y
-        }
-    })
+        },
+        []
+    )
     const headerStyle = useAnimatedStyle(() => {
         const height = interpolate(
             scrollY.value,
@@ -39,7 +43,7 @@ export const Profile = () => {
         return {
             height
         }
-    });
+    }, [])
 
     const profileStyle = useAnimatedStyle(() => {
         const startTop = EXPANDED_HEIGHT - (PROFILE_IMAGE_SIZE / 2);
@@ -61,13 +65,12 @@ export const Profile = () => {
             top,
             transform: [{ scale }]
         }
-    })
+    }, [])
 
     // pick an image function for cover and avatar upload and update
     const handleImageUpdate = async (type: 'avatar' | 'cover') => {
         const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
         if (!permissionResult.granted) {
-            Alert.alert('Permission required', 'Permission to access the media library is required.');
             return;
         }
         const result = await ImagePicker.launchImageLibraryAsync({
@@ -122,17 +125,39 @@ export const Profile = () => {
             </Animated.View>
             <Animated.ScrollView
                 onScroll={onScroll}
-                scrollEventThrottle={16}
+                scrollEventThrottle={8}
                 contentContainerStyle={{ paddingTop: EXPANDED_HEIGHT }}
                 showsVerticalScrollIndicator={false}
+                bounces={true}
+                decelerationRate="fast"
             >
                 <View style={styles.content}>
-                    <ThemeText variant="title" style={styles.nameText}>{user?.name}</ThemeText>
-                    <ChangeButton title="Update Email" onPress={()=> console.log("update Email pressed")} />
-                    <Space height={8} />
-                    <ChangeButton title="Change Password" onPress={()=> console.log("Change password pressed")} />
-                    <Space height={8}/>
-                    <LogOut />
+                    <View style={styles.profileInfo}>
+                        <ThemeText variant="title" style={styles.nameText}>{user?.name}</ThemeText>
+                        <ThemeText variant="body" style={styles.emailText}>{user?.email}</ThemeText>
+                    </View>
+
+                    <View style={styles.section}>
+                        <ThemeText variant="body" style={styles.sectionTitle}>Account Settings</ThemeText>
+                        <View style={styles.settingsContainer}>
+                            <EmailVerificationCard />
+                            <View style={styles.settingItem}>
+                                <ChangeButton title="Update Email" onPress={()=> router.push('/(tabs)/profile/updateEmail') } />
+                            </View>
+                            <View style={styles.settingItem}>
+                                <ChangeButton title="Change Password" onPress={()=> router.push('/(tabs)/profile/changePassword')} />
+                            </View>
+                        </View>
+                    </View>
+
+                    <View style={styles.section}>
+                        <ThemeText variant="body" style={styles.sectionTitle}>Account Actions</ThemeText>
+                        <View style={styles.settingsContainer}>
+                            <LogOut />
+                        </View>
+                    </View>
+
+                    <View style={styles.bottomSpacing} />
                 </View>
             </Animated.ScrollView>
             <Animated.View
@@ -215,14 +240,58 @@ const styles = StyleSheet.create((theme,rt) => ({
     },
     content: {
         backgroundColor: theme.colors.background,
-        padding: 20,
-        minHeight: 1000
+        paddingHorizontal: 20,
+        paddingTop: 20,
+    },
+    profileInfo: {
+        alignItems: 'center',
+        marginBottom: 32,
+        paddingVertical: 16,
+        backgroundColor: theme.colors.surface,
+        borderRadius: 16,
+        marginHorizontal: 4,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+        elevation: 4,
     },
     nameText: {
-        fontSize: 24,
+        fontSize: rt.fontScale * 24,
         fontWeight: 'bold',
-        textAlign: 'center',
-        marginBottom: 20
+        marginBottom: 4,
+        color: theme.colors.typography
+    },
+    emailText: {
+        fontSize: rt.fontScale * 16,
+        color: theme.colors.typographySecondary,
+        opacity: 0.8
+    },
+    section: {
+        marginBottom: 24,
+    },
+    sectionTitle: {
+        fontSize: rt.fontScale * 18,
+        fontWeight: '600',
+        marginBottom: 12,
+        paddingLeft: 4,
+        color: theme.colors.typography
+    },
+    settingsContainer: {
+        backgroundColor: theme.colors.surface,
+        borderRadius: 16,
+        padding: 4,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+        elevation: 4,
+    },
+    settingItem: {
+        marginVertical: 4,
+    },
+    bottomSpacing: {
+        // height: 50,
     },
     loader: {
         flex: 1,

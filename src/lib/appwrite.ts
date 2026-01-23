@@ -45,14 +45,9 @@ export const appwriteConfig = {
 
 export const client = new Client()
     .setEndpoint(appwriteConfig.endpoint)
-    .setProject(appwriteConfig.projectId);
-switch(Platform.OS){
-    case 'ios':
-        client.setPlatform("com.devadiman.genshinImpact")
-        break
-    case 'android':
-        client.setPlatform("com.devadiman.genshinImpact")
-}
+    .setProject(appwriteConfig.projectId)
+    .setPlatform("com.devadiman.pixory");
+
 export const account = new Account(client);
 export const databases = new Databases(client);
 export const tableDb = new TablesDB(client);

@@ -67,10 +67,10 @@ export default function WallpaperDetail() {
             // 2. Call the Native Module (Cleaned up to match example structure)
             const lastUri = await createDirectory(finalUri)
             await setWallpaperAsync(lastUri, selectedLocation);
-            // 3. Success Alert
-            Alert.alert("Success", "Wallpaper updated successfully!", [
-                { text: "OK", }
-            ]);
+            // 3. Success Toast
+            if (Platform.OS === 'android') {
+                ToastAndroid.showWithGravity("Wallpaper updated successfully!", ToastAndroid.LONG, ToastAndroid.CENTER);
+            }
 
         } catch (error: any) {
             console.error(error);
