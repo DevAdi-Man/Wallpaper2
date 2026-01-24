@@ -4,12 +4,9 @@
     "slug": "pixory",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/light-icon.png",
+    "icon": "./assets/images/ic_launcher.png",
     "scheme": "pixory",
     "userInterfaceStyle": "automatic",
-    "dark": {
-      "icon": "./assets/images/dark-icon.png"
-    },
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
@@ -18,8 +15,9 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/light-icon.png",
-        "backgroundColor": "#FFFFFF"
+        "foregroundImage": "./assets/images/ic_launcher_monochrome.png",
+        "backgroundColor": "#813d9c",
+        "monochromeImage": "./assets/images/ic_launcher_monochrome.png"
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
@@ -31,7 +29,7 @@
     },
     "web": {
       "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/ic_launcher-web.png"
     },
     "plugins": [
        "expo-router",
@@ -44,14 +42,10 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/light-icon.png",
+          "image": "./assets/images/playstore-icon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff",
-          "dark": {
-            "image": "./assets/images/dark-icon.png",
-            "backgroundColor": "#000000"
-          },
           "animation": {
             "type": "fade",
             "duration": 1000
