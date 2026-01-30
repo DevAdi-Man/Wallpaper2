@@ -1,4 +1,4 @@
-import { TextInput, View, Pressable, Alert, ActivityIndicator, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { TextInput, View, Pressable, ActivityIndicator, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { useRouter, Link } from 'expo-router';
 import { useState } from 'react';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
@@ -11,6 +11,7 @@ import { ThemeButton } from '@/src/components/themeButton';
 import { useAuth } from '@/src/context/AuthContext';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
+import Toast from 'react-native-toast-message';
 
 const validationSchema = Yup.object().shape({
     name: Yup.string()
@@ -37,7 +38,11 @@ export default function RegisterScreen() {
             await createAccount(values.email, values.password, values.name);
             router.replace('/(tabs)/home');
         } catch (error: any) {
-            Alert.alert("Registration Failed", error.message);
+            Toast.show({
+                type: 'error',
+                text1: 'Registration Failed',
+                text2: error.message
+            });
         } finally {
             setLoading(false);
         }

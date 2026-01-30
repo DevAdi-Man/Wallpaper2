@@ -16,6 +16,7 @@ export const getBanners = async (): Promise<BannerProps[]> =>{
         }));
         return banner
     } catch (error) {
+        console.error("Error fetching banners:", error);
         return []
     }
 }

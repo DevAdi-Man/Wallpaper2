@@ -44,10 +44,10 @@ export const FavoriteItem = React.memo(({ item, openWallpaperRoute }: WallpaperI
         const doubleTab = Gesture.Tap()
             .numberOfTaps(2)
             .runOnJS(true)
+            .maxDelay(200)
             .onEnd(() => {
                 const color = isFavorite ? 'white' : 'red';
                 setHeartColor(color);
-
                 onLike()
                 setTimeout(() => {
                     toggleFav({
@@ -61,6 +61,8 @@ export const FavoriteItem = React.memo(({ item, openWallpaperRoute }: WallpaperI
         const singleTap = Gesture.Tap()
             .numberOfTaps(1)
             .runOnJS(true)
+            .maxDeltaX(10)
+            .maxDeltaY(10)
             .onEnd(() => {
                 openWallpaperRoute(item)
             })
@@ -87,6 +89,8 @@ export const FavoriteItem = React.memo(({ item, openWallpaperRoute }: WallpaperI
         </GestureDetector>
     )
 })
+
+FavoriteItem.displayName = 'FavoriteItem';
 const styles = StyleSheet.create((theme) => ({
     card: {
         margin: 8,

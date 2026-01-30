@@ -40,7 +40,7 @@ export const useFavourites = create<state & action>()(
                     })
                     try {
                         await removeFavorites(userId, wallpaper.id)
-                    } catch (error) {
+                    } catch {
                         set({ favorites: [...favorites, wallpaper] })
                     }
                 } else {

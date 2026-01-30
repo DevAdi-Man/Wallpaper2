@@ -19,7 +19,7 @@ export default function WelcomeScreen() {
 
     return (
         <SafeAreaView style={styles.container}>
-            <View>
+            <View style={styles.imageView}>
                 <View style={styles.imageContainer}>
                     <Image
                         style={styles.firstImage}
@@ -76,6 +76,13 @@ const styles = StyleSheet.create((theme) => ({
     container: {
         flex: 1,
         paddingHorizontal: 24,
+        justifyContent: "flex-end",
+    },
+    imageView:{
+        position:'absolute',
+        top:8,
+        left:24,
+        right:24
     },
     row: {
         flexDirection: "row",
@@ -107,8 +114,9 @@ const styles = StyleSheet.create((theme) => ({
         height: 280,
     },
     content: {
-        paddingBottom: 32,
+        paddingBottom: 8,
         alignItems: "center",
+        width: "100%",
     },
 }));
 

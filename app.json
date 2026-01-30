@@ -2,7 +2,7 @@
   "expo": {
     "name": "Pixory",
     "slug": "pixory",
-    "version": "1.0.0",
+    "version": "1.0.2",
     "orientation": "portrait",
     "icon": "./assets/images/ic_launcher.png",
     "scheme": "pixory",
@@ -14,6 +14,7 @@
       "bundleIdentifier": "com.devadiman.pixory"
     },
     "android": {
+      "versionCode":3,
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/ic_launcher_monochrome.png",
         "backgroundColor": "#813d9c",

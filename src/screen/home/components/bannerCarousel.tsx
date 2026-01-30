@@ -82,7 +82,7 @@ export const BannerCarousel = () => {
             });
         }, 3000);
         return () => clearInterval(interval);
-    }, []);
+    }, [banner.length, scrollX.value]);
     return (
         <View style={{ alignItems: 'center' }}>
             <Animated.ScrollView

@@ -1,14 +1,14 @@
-import { useLocalSearchParams, Stack, useRouter } from 'expo-router';
-import { View, Alert, Pressable, Text, Image as RNImage, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { View, Pressable, Text, Image as RNImage, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { Image, ImageProps } from 'expo-image';
 import React, { useState } from 'react';
 import { ThemeIcons } from '@/src/components/themeIcons';
 import { Ionicons } from '@expo/vector-icons';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
-import { File, Paths, Directory } from 'expo-file-system'
+import { File, Paths, Directory  } from 'expo-file-system'
 import { setWallpaperAsync, WallpaperMode } from '@/modules/my-wallpaper';
 import Animated, { AnimatedProps } from 'react-native-reanimated';
-import SafeAreaView from '@/src/components/safeAreaView';
+import Toast from 'react-native-toast-message';
 
 const AnimatedImage = Animated.createAnimatedComponent(Image) as React.ComponentType<
     AnimatedProps<ImageProps>
@@ -32,12 +32,12 @@ export default function WallpaperDetail() {
                 dir.create()
             }
 
-            const fileName = remoteUri.split('/').pop() || `wallpaper-${Date.now()}.jpg`;
+            const unsafeFileName = remoteUri.split('/').pop() || `wallpaper-${Date.now()}.jpg`;
+            const fileName = unsafeFileName.replace(/[^a-zA-Z0-9.-_]/g, '_');
             const file = new File(dir, fileName);
 
             if (file.exists) {
-                console.log("File already exists locally, using cache:", file.uri);
-                return file.uri;
+                 file.delete()
             }
             const output = await File.downloadFileAsync(remoteUri, file);
             return output.uri;
@@ -49,7 +49,11 @@ export default function WallpaperDetail() {
     const handleSetWallpaper = async () => {
         // Prevent function from running if source is missing
         if (!source) {
-            Alert.alert("Error", "No image source found.");
+            Toast.show({
+                type: 'info',
+                text1: 'Info',
+                text2: 'No image source found.'
+            });
             return;
         }
 
@@ -68,13 +72,19 @@ export default function WallpaperDetail() {
             const lastUri = await createDirectory(finalUri)
             await setWallpaperAsync(lastUri, selectedLocation);
             // 3. Success Toast
-            if (Platform.OS === 'android') {
-                ToastAndroid.showWithGravity("Wallpaper updated successfully!", ToastAndroid.LONG, ToastAndroid.CENTER);
-            }
+            Toast.show({
+                type: 'success',
+                text1: 'Success',
+                text2: 'Wallpaper updated successfully!'
+            });
 
         } catch (error: any) {
             console.error(error);
-            Alert.alert("Error", error.message || "Failed to set wallpaper.");
+            Toast.show({
+                type: 'error',
+                text1: 'Error',
+                text2: error.message || "Failed to set wallpaper."
+            });
         } finally {
             setIsSetting(false);
         }

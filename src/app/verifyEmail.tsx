@@ -18,9 +18,9 @@ export default function VerifyEmailRoute() {
     } else {
       setStatus('Error: Invalid Link');
     }
-  }, [userId, secret]);
+  }, [userId, secret, handleVerification]);
 
-  const handleVerification = async () => {
+  const handleVerification = useCallback(async () => {
     try {
       await confirmEmailVerification(userId as string, secret as string);
 
@@ -35,7 +35,7 @@ export default function VerifyEmailRoute() {
     } catch (error: any) {
       setStatus('Verification Failed: ' + error.message);
     }
-  };
+  }, [confirmEmailVerification, refreshProfile, router, secret, userId]);
 
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: theme.colors.background }}>

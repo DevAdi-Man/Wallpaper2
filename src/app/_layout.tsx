@@ -7,6 +7,7 @@ import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { AuthProvider, useAuth } from "../context/AuthContext";
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { configureReanimatedLogger, ReanimatedLogLevel } from 'react-native-reanimated';
+import Toast from 'react-native-toast-message';
 
 configureReanimatedLogger({
     level: ReanimatedLogLevel.warn,
@@ -55,8 +56,9 @@ export default function RootLayout() {
         <GestureHandlerRootView>
             <AuthProvider>
                 <KeyboardProvider>
-                    <StatusBar />
+                    <StatusBar  />
                     <RootLayoutNav />
+                    <Toast />
                 </KeyboardProvider>
             </AuthProvider>
         </GestureHandlerRootView>

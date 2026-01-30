@@ -5,8 +5,9 @@ import { useAuth } from "@/src/context/AuthContext"
 import {  Entypo,  FontAwesome } from "@expo/vector-icons"
 import { Image } from "expo-image"
 import { useState } from "react"
-import { ActivityIndicator, Alert,  TouchableOpacity, View } from "react-native"
-import Animated, { Extrapolation, interpolate, useAnimatedScrollHandler, useAnimatedStyle, useSharedValue, withSpring, runOnJS } from "react-native-reanimated"
+import { ActivityIndicator, TouchableOpacity, View } from "react-native";
+import Toast from "react-native-toast-message";
+import Animated, { Extrapolation, interpolate, useAnimatedScrollHandler, useAnimatedStyle, useSharedValue } from "react-native-reanimated"
 import { StyleSheet, useUnistyles } from "react-native-unistyles"
 import * as ImagePicker from 'expo-image-picker';
 import { userServices } from "@/src/services/userServices"
@@ -91,7 +92,11 @@ export const Profile = () => {
                 }
                 await refreshProfile();
             } catch (error) {
-                Alert.alert("Error", "Fails to Update image. Please try again.")
+                Toast.show({
+                    type: 'error',
+                    text1: 'Error',
+                    text2: 'Fails to Update image. Please try again.'
+                })
                 console.error(error)
             } finally {
                 setIsUploading(null)

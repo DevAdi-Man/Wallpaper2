@@ -15,7 +15,7 @@ export const Home = () => {
             setUserId(user.$id);
             fetchFavoritet();
         }
-    }, [user])
+    }, [user, fetchFavoritet, setUserId])
     return (
         <SafeAreaView>
             <ThemeText variant="title" style={{ paddingHorizontal: 8 }}>Pixory</ThemeText>

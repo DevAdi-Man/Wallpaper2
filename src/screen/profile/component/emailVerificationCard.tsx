@@ -1,8 +1,9 @@
-import { View, Pressable, Alert } from 'react-native';
+import { View, Pressable } from 'react-native';
 import { useState } from 'react';
-import { StyleSheet, useUnistyles } from 'react-native-unistyles';
+import { StyleSheet } from 'react-native-unistyles';
 import { ThemeText } from '@/src/components/themeText';
 import { useAuth } from '@/src/context/AuthContext';
+import Toast from 'react-native-toast-message';
 
 export const EmailVerificationCard = () => {
     const [loading, setLoading] = useState(false);
@@ -17,11 +18,17 @@ export const EmailVerificationCard = () => {
         try {
             const redirectUrl = 'https://devadi.me/verify';
             await sendVerificationEmail(redirectUrl);
-            if (Platform.OS === 'android') {
-                ToastAndroid.showWithGravity("Verification email sent! Please check your email.", ToastAndroid.LONG, ToastAndroid.CENTER);
-            }
+            Toast.show({
+                type: 'success',
+                text1: 'Success',
+                text2: 'Verification email sent! Please check your email.'
+            });
         } catch (error: any) {
-            Alert.alert("Error", error.message || "Failed to send verification email");
+            Toast.show({
+                type: 'error',
+                text1: 'Error',
+                text2: error.message || "Failed to send verification email"
+            });
         } finally {
             setLoading(false);
         }

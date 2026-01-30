@@ -43,7 +43,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             const profile = await userServices.getUserProfiele(currentUser.$id, currentUser.name, currentUser.email);
             setUserProfile(profile);
             await useFavourites.getState().fetchFavorites();
-        } catch (error) {
+        } catch {
             setUser(null);
             setUserProfile(null)
         } finally {

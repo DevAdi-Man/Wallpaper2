@@ -9,6 +9,7 @@ export const changePassword = async(password:string,oldPassword:string)=>{
         return result;
     } catch (error) {
        console.error("Error on changePassword",error)
+       throw error;
     }
 }
 
@@ -26,6 +27,7 @@ export const updatingEmail = async({newEmail,password}:UpdateEmailProp)=>{
         return result
     } catch (error) {
        console.error("Error while updatingEmail")
+       throw error;
     }
 }
 

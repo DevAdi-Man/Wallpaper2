@@ -3,7 +3,7 @@ import { SafeAreaView } from "react-native-safe-area-context"
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
 import { Octicons, MaterialIcons, AntDesign } from '@expo/vector-icons';
 import { ThemeIcons } from "./themeIcons";
-import { useRouter, usePathname } from "expo-router";
+import { useRouter } from "expo-router";
 import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 
 export const TabBarConfig = [
@@ -32,7 +32,6 @@ export const TabBarConfig = [
 export const CustomeTabBar: React.FC<BottomTabBarProps> = ({state,navigation}) => {
     const { theme } = useUnistyles();
     const router = useRouter();
-    const pathname = usePathname();
     return (
         <SafeAreaView edges={['bottom']} style={[styles.safe, { backgroundColor: theme.colors.tabBarBackground }]}>
             {
@@ -59,8 +58,7 @@ const styles = StyleSheet.create((theme) => ({
     safe: {
         flexDirection: 'row',
         justifyContent: 'space-around',
-        height: 80,
-        alignItems: 'center'
+        paddingVertical: 12,
     },
     container: {
         padding: 8,

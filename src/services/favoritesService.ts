@@ -1,16 +1,6 @@
-import { ID, Models, Query } from "react-native-appwrite"
+import { ID, Query } from "react-native-appwrite"
 import { appwriteConfig, tableDb } from "../lib/appwrite"
 import { WallpaperProps } from "./wallpaperService"
-
-type WallpaperRow = Models.Row & {
-    imgSource: string,
-    height: number
-}
-
-type FavoriteRow = Models.Row & {
-    userId: string,
-    wallpapers: WallpaperRow
-}
 
 export const addFavorites = async (userId: string, wallpaperId: string) => {
     try {

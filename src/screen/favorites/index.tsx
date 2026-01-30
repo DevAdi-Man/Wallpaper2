@@ -5,7 +5,7 @@ import { useFavourites } from "./store/favourites"
 import { Space } from "@/src/components/space"
 import { FlashList } from "@shopify/flash-list"
 import { useRouter } from "expo-router"
-import { useCallback, useEffect } from "react"
+import { useCallback } from "react"
 import {  FavoriteItem } from "@/src/components/favoriteItem"
 import { WallpaperProps } from "@/src/services/wallpaperService"
 

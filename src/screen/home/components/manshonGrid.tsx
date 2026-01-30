@@ -19,7 +19,7 @@ export const ManshonGrid = ({ collectionId, type }: { collectionId?: string, typ
         loadWallpaperData(true)
     }, [collectionId, type])
 
-    const loadWallpaperData = async (isInitialLoad = false) => {
+    const loadWallpaperData = useCallback(async (isInitialLoad = false) => {
         if (!hasMore || (isFetchingMore && !isInitialLoad)) return;
         if (isInitialLoad) {
             setIsLoading(true)
@@ -42,7 +42,7 @@ export const ManshonGrid = ({ collectionId, type }: { collectionId?: string, typ
             setIsLoading(false)
             setIsFetchingMore(false)
         }
-    }
+    }, [hasMore, isFetchingMore, wallpaper, collectionId, type])
     const renderFooter = () => {
         if (!isFetchingMore) return null;
         return <ActivityIndicator size="small" style={{ marginTop: 20 }} />;

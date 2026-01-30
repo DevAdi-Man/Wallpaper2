@@ -4,7 +4,7 @@ import { ThemeIcons } from "@/src/components/themeIcons"
 import { ThemeText } from "@/src/components/themeText"
 import { Feather, Ionicons } from "@expo/vector-icons"
 import { useRouter } from "expo-router"
-import { Platform, Pressable, ToastAndroid, View } from "react-native"
+import { Pressable, View } from "react-native"
 import { StyleSheet, useUnistyles } from "react-native-unistyles"
 import { ThemeTextInput } from "@/src/components/themeTextInput"
 import { useState } from "react"
@@ -12,6 +12,7 @@ import { ThemeButton } from "@/src/components/themeButton"
 import { Formik } from "formik"
 import * as Yup from "yup"
 import { changePassword } from "@/src/services/authService"
+import Toast from "react-native-toast-message"
 
 const validationSchema = Yup.object().shape({
     oldPassword: Yup.string()
@@ -37,14 +38,19 @@ export const ChangePassword = () => {
         setLoading(true);
         try {
             await changePassword(values.newPassword, values.oldPassword);
-            if (Platform.OS === 'android') {
-                ToastAndroid.showWithGravity('Password changed successfully!', ToastAndroid.LONG, ToastAndroid.CENTER);
-            }
+            Toast.show({
+                type: 'success',
+                text1: 'Success',
+                text2: 'Password changed successfully!'
+            });
             router.back();
         } catch (error) {
-            if (Platform.OS === 'android') {
-                ToastAndroid.showWithGravity('Failed to change password. Please check your current password.', ToastAndroid.LONG, ToastAndroid.CENTER);
-            }
+            console.error("Failed to change password:", error)
+            Toast.show({
+                type: 'error',
+                text1: 'Error',
+                text2: 'Failed to change password. Please check your current password.'
+            });
         } finally {
             setLoading(false);
         }

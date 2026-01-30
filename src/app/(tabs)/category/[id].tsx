@@ -19,9 +19,9 @@ export default function CategoryParentScreen() {
 
     useEffect(() => {
         loadData()
-    }, [parentId]);
+    }, [parentId, loadData]);
 
-    const loadData = async () => {
+    const loadData = useCallback(async () => {
         try {
             const data = await getSubcategoriesByParent(parentId);
             setSubCategory(data)
@@ -31,7 +31,7 @@ export default function CategoryParentScreen() {
         } finally {
             setIsLoading(false)
         }
-    }
+    }, [parentId, id]);
     const renderItem = useCallback(({ item }: { item: CategoryItem }) => (
         <Pressable
             onPress={() => {

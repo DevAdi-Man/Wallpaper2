@@ -4,13 +4,16 @@ import { ThemeIcons } from "@/src/components/themeIcons"
 import { ThemeText } from "@/src/components/themeText"
 import { Feather, Ionicons } from "@expo/vector-icons"
 import { useRouter } from "expo-router"
-import { Platform, Pressable, ToastAndroid, View } from "react-native"
+import { Pressable, View } from "react-native"
 import { StyleSheet, useUnistyles } from "react-native-unistyles"
 import { ThemeTextInput } from "@/src/components/themeTextInput"
 import { useState } from "react"
 import { ThemeButton } from "@/src/components/themeButton"
 import { Formik } from "formik"
 import * as Yup from "yup"
+import Toast from "react-native-toast-message"
+import { useAuth } from "@/src/context/AuthContext"
+import { userServices } from "@/src/services/userServices"
 
 const validationSchema = Yup.object().shape({
     email: Yup.string()
@@ -25,10 +28,28 @@ export const UpdateEmail = () => {
     const { theme } = useUnistyles()
     const router = useRouter()
     const [showPassword, setShowPassword] = useState(false);
+    const { refreshUser } = useAuth()
+    const [loading, setLoading] = useState(false)
 
-    const handleSubmit = (values: { email: string; password: string }) => {
-        if (Platform.OS === 'android') {
-            ToastAndroid.showWithGravity(`Email: ${values.email}`, 300, 5)
+    const handleSubmit = async (values: { email: string; password: string }) => {
+        setLoading(true)
+        try {
+            await userServices.updateEmail(values.email, values.password)
+            await refreshUser()
+            Toast.show({
+                type: 'success',
+                text1: 'Success',
+                text2: 'Email updated successfully! Please verify your new email.'
+            });
+            router.back();
+        } catch (error: any) {
+            Toast.show({
+                type: 'error',
+                text1: 'Error',
+                text2: error.message || 'Failed to update email.'
+            });
+        } finally {
+            setLoading(false)
         }
     }
 
@@ -49,7 +70,7 @@ export const UpdateEmail = () => {
                         <ThemeText variant="title">Update Email</ThemeText>
                         <Space height={8} />
                         <ThemeText style={styles.mainSubText} variant="body" numberOfLines={3}>
-                            Update your email address here. Make sure it's an active email — you'll need to verify it before the change takes effect.
+                            Update your email address here. Make sure it&apos;s an active email — you&apos;ll need to verify it before the change takes effect.
                         </ThemeText>
                         <Space height={16} />
                         <View style={styles.textInputContainer}>
@@ -95,7 +116,7 @@ export const UpdateEmail = () => {
                             )}
                         </View>
                         <Space height={64} />
-                        <ThemeButton content="Update email" isIcon={false} onPress={handleSubmit} />
+                        <ThemeButton content="Update email" isIcon={false} onPress={handleSubmit} loading={loading} />
                     </View>
                 )}
             </Formik>
